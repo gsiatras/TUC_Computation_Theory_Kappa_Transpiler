@@ -1,0 +1,19 @@
+Line 1 Token 1: i
+Line 1 Token 4: :=
+Line 1 Token 2: 0
+Line 2 Token 1: abc
+Line 2 Token 4: :=
+Line 2 Token 3: -5.
+Line 3 Token 1: e10
+Line 3 Token 4: :=
+Line 3 Token 3: 0.1
+Line 4 Token 1: i4i
+Line 4 Token 4: :=
+Line 4 Token 3: -6.3e-4
+Line 5 Lexical Error: Unrecognized literal *
+Line 6 Token 1: jj1
+Line 6 Token 4: :=
+Line 6 Token 3: 4.e+2
+Line 7 Token 2: 123
+Line 7 Token 4: :=
+Line 7 Token 3: .1e-198

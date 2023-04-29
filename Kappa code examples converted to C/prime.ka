@@ -1,0 +1,55 @@
+limit, num, counter: integer;
+
+def prime(n: integer)-> boolean: 
+   i: integer; 
+   result, isPrime: boolean;
+      
+  if (n < 0): 
+    result = prime(-n);
+  else: 
+    if (n < 2): 
+      result = False;    
+    else: 
+      if (n == 2): 
+        result = True;
+      else: 
+        if (n % 2 == 0):
+          result = False;
+        else:  
+          i = 3;
+          isPrime = True;
+          while (isPrime and (i < n / 2) ): 
+            isPrime = n % i != 0;
+            i = i + 2;
+          endwhile;
+          result = isPrime;
+        endif;
+      endif;
+    endif;
+  endif;
+   
+  return result;
+enddef;
+
+def main(): 
+
+  limit = readInteger();  
+
+  -- 2 is prime
+  writeInteger(2);
+  writeStr(" "); 
+
+  counter = 1; -- count the prime numbers found
+  -- check only odd numbers for primality  
+  for num in [3: limit+1: 2]:  
+    if (prime(num)):  
+      counter = counter + 1;
+      writeInteger(num);
+      writeStr(" ");
+    endif;      
+  endfor;
+  
+   writeStr("\nThe total number of primes found is:");
+   writeInteger(counter);
+   writeStr("\n");   
+enddef;

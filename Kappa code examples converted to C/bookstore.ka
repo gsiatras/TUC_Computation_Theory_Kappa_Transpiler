@@ -1,0 +1,185 @@
+comp Address:
+  #street: str;
+  #number: integer;
+  #city: str;
+
+  def setAddress(s: str, n: integer, c: str):
+    #street = s;
+    #number = n;
+    #city = c;
+  enddef;
+
+  def printAddress():
+    write("Address: %s %d, %s\n", #street, #number, #city);    
+  enddef;
+endcomp;
+
+comp Person:
+  #firstName, #lastName: str;
+  #email: str;
+  #phone: integer;
+  #address: Address;
+
+  def setPerson(fn: str, ln: str, email: str, phone: integer, addr: Address):
+    #firstName = fn;
+    #lastName = ln;
+    #email = email;
+    #phone = phone;
+    #address = addr;
+  enddef;
+
+  def printPersonInfo():
+    write("%s %s, email: %s phone: %d\n", #firstName, #lastName, #email, #phone);
+    #address.printAddress();
+  enddef;
+
+endcomp;
+
+comp Book:
+  #title, #isbn: str;
+  #author: Person;  
+  #numOfCopies: integer;
+  #price: scalar;
+
+  def setBook(t: str, a: Person, numOfCopies: integer, price: scalar):
+    #title = t;
+    #author = a;
+    #numOfCopies = numOfCopies;
+    #price = price;
+  enddef;
+
+  def printBook():
+    write("Title: %s\n", #title);
+    writeStr("Author:");
+    #author.printPersonInfo();
+    write("Price:%f\n", #price);
+    write("Number of available copies: %d\n", #numOfCopies);    
+  enddef;
+endcomp;
+
+comp Order:
+  #orderNum: integer;
+  #book: Book;
+  #quantity: integer;
+  #shippingAddress: Address;
+  #delivered: boolean;
+
+  def setOrder(orNum: integer, b: Book, q: integer, sh: Address, del: boolean):
+    #orderNum = orNum;
+    #book = b;
+    #quantity = q;
+    #shippingAddress = sh;
+    #delivered = del;
+  enddef;
+
+  def printOrder():
+
+  enddef;
+
+endcomp;
+
+comp Bookstore:
+  #name: str;
+  #listOfBooks[100]: Book;
+  #numOfBooks: integer;
+  #listOfOrders[100]: Order;
+  #numOfOrders: integer;
+
+  def putOrder(o: Order):    
+    #listOfOrders[#numOfOrders] = o;
+    #numOfOrders += 1;
+  enddef;
+ 
+  def addBook(b: Book):    
+    #listOfBooks[#numOfBooks] = b;
+    #numOfBooks += 1;
+  enddef;
+
+  def printBookStoreBooks():
+    for i in [0 : #numOfBooks]:
+      #listOfBooks[i].printBook();
+    endfor;
+  enddef;
+
+  def calculateTotalOrdersIncome()-> scalar:     
+    total: scalar;
+    total = 0;
+
+    for i in [0 : #numOfOrders]:
+      if (#listOfOrders[i].#delivered):
+        total = total + #listOfOrders[i].#quantity * #listOfOrders[i].#book.#price;      
+      endif;
+    endfor;
+
+    return total;
+  enddef; 
+endcomp;
+
+orderId: integer;
+
+-- factory functions
+def createAddress(s: str, n: integer, c: str)-> Address:
+  a: Address;
+  a.setAddress(s, n, c);    
+  return a;
+enddef;
+
+def createPerson(fn: str, ln: str, email: str, phone: integer, addr: Address)-> Person:
+  p: Person;
+  p.setPerson(fn, ln, email, phone, addr);    
+  return p;
+enddef;
+
+def createBook(t: str, a: Person, numOfCopies: integer, price: scalar)-> Book:
+  b: Book;
+  b.setBook(t, a, numOfCopies, price);
+  return b;
+enddef;
+
+def createOrder(orNum: integer, b: Book, q: integer, sh: Address, del: boolean)-> Order:
+  ord: Order;
+  ord.setOrder(orNum, b, q, sh, del);
+  return ord;
+enddef;
+
+def createBookstore(n: str)->Bookstore:
+  bs: Bookstore;
+  bs.#name = n;
+  bs.#numOfBooks = 0;
+  bs.#numOfOrders = 0;
+  
+  return bs;
+enddef;
+
+def main():
+  orderId = 0;
+
+  a, a1: Address;
+  a = createAddress("Stadiou", 10, "Stadiou");  
+
+  author: Person;
+  author = createPerson("Christos","Papadimitriou","cpap@gmail.com", 12345, a);   
+
+  b: Book;
+  b = createBook("Computation Theory", author, 34.3, 100);
+  
+  bs: Bookstore;
+  bs = createBookstore("Papasotiriou");
+  
+  bs.addBook(b);
+
+  a = createAddress("Wall Street", 10, "NY");
+  author = createPerson("Dennis", "Richie", "richie@gmail.com", 54321, a);
+  b = createBook("C Programming", author, 10.3, 100);  
+  bs.addBook(b);  
+
+  bs.printBookStoreBooks();
+
+  ord : Order;
+  ord = createOrder(orderId, b, 2, a, False );  
+  orderId +=  1;
+  
+  bs.putOrder(ord);
+  write("Bookstore orders income: %.2f\n", bs.calculateTotalOrdersIncome());
+
+enddef;

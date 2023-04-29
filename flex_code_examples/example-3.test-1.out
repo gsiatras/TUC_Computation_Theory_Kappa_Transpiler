@@ -1,0 +1,34 @@
+Line 1 Token 1: i
+Line 1 Token 4: :=
+Line 1 Token 2: 0
+Line 2 Token 1: abc
+Line 2 Token 4: :=
+A real: (-5) Line 2 Token 3: -5.
+Line 3 Token 1: e10
+Line 3 Token 4: :=
+A real: (0.1) Line 3 Token 3: 0.1
+Line 4 Token 1: i4i
+Line 4 Token 4: :=
+A real: (-0.00063) Line 4 Token 3: -6.3e-4
+Line 5 Token 1: i
+An operator Line 5 Token 43: +
+Line 5 Token 1: abc
+Line 6: line comment: //
+Line 7: line comment: // this is a line comment
+Line 8 Token 1: jj1
+Line 8 Token 4: :=
+A real: (400) Line 8 Token 3: 4.e+2
+Line 9 Token 5: if
+Line 9 Token 40: (
+Line 9 Token 1: abc
+Line 9 Token 41: )
+Line 10 Token 1: i
+Line 10 Token 4: :=
+Line 10 Token 2: -1
+Line 11 Token 6: else
+Line 12 Token 1: i
+Line 12 Token 4: :=
+Line 12 Token 2: 1
+Line 13 Token 2: 123
+Line 13 Token 4: :=
+A real: (1e-20) Line 13 Token 3: .1e-19

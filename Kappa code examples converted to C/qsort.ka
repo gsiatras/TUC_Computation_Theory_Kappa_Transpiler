@@ -1,0 +1,85 @@
+-- This is a program that implements and tests the quicksort algorithm
+-- to sort an array of integers.
+
+-- Global variable use by the random number generator function.
+next_random:integer;
+
+-- A simple random number generator.
+-- Change the global variable next_random 
+-- to produce a different sequence of pseudorandom numbers.
+
+def next()->integer:
+    next_random = (next_random * 1103515245 + 12345) % 2147483648;
+    if (next_random<0):
+        next_random = -next_random;
+    endif;
+    return next_random;
+enddef;
+
+-- Swap the elements of array a at positions i and j
+-- assuming that i and j are valid indices
+def swap(a[]:integer, i:integer, j:integer):
+    temp:integer;
+    temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+enddef;
+
+-- Impelementation of the quick sort algorithm
+def quickSort(a[]:integer, low:integer, high:integer) -> void:
+    pivot, i, j : integer;
+    if (low < high):
+        pivot = low;
+        i = low;
+        j = high;
+        while (i < j):
+            while(a[i] <= a[pivot] and i < high):
+                i = i+1;
+            endwhile;
+            while(a[j] > a[pivot]):
+                j = j-1;
+            endwhile;
+            if (i < j):
+                swap(a,i,j);
+            endif;
+        endwhile;
+        swap(a,pivot,j);
+        quickSort(a, low, j - 1);
+        quickSort(a, j + 1, high);
+    endif;
+enddef;
+
+-- Print contents of an array
+def printArray(a[]:integer, size:integer):
+    for i in [0:size]:
+        writeInteger(a[i]);
+        if (i==size-1):
+            continue;
+        endif;
+        writeStr(", ");
+    endfor;
+    writeStr("\n");
+enddef;
+
+-- Test quickSort
+def main():
+    const aSize = 100:integer;
+
+    a[100]:integer;
+
+    writeStr("Give a seed for the random number generator: ");
+    readInteger(next_random);
+
+    -- Create an array of random numbers from 0 to 999
+    for i in [0:aSize]:
+        a[i] = next() % 1000;
+    endfor;
+    
+    writeStr("Random array generated: ");
+    printArray(a,aSize);
+
+    quickSort(a,0,aSize-1);
+
+    writeStr("Sorted array: ");
+    printArray(a,aSize);
+enddef;

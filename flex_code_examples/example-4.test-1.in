@@ -1,0 +1,19 @@
+ab
+// this is a simple test
+
+cde
+/* multi line comment 1 */
+
+/*** 
+
+*/
+
+
+f
+/**** 
+multi line 
+  comment ****/
+
+g
+
+

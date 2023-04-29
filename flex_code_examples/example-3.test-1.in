@@ -1,0 +1,14 @@
+i:=0
+abc:=-5.
+e10 := 0.1
+i4i := -6.3e-4
+i + abc
+//
+// this is a line comment
+jj1 := 4.e+2
+if (abc) 
+	i:= -1
+else 
+	i:=1
+123 := .1e-19
+

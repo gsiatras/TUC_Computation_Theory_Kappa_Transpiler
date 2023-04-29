@@ -1,0 +1,40 @@
+-- This is a program that reverses an integer array using comprehension to initialize it.
+
+-- Swap the elements of array a at positions i and j
+-- assuming that i and j are valid indices
+def swap(a[]:integer, i:integer, j:integer):
+    temp:integer;
+    temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+enddef;
+
+-- Print contents of an array of integers
+def printArray(a[]:integer, size:integer):
+    for i in [0:size]:
+        writeInteger(a[i]);
+        if (i==size-1):
+            continue;
+        endif;
+        writeStr(", ");
+    endfor;
+    writeStr("\n");
+enddef;
+
+def main():
+    k: integer;
+
+    -- Create an array of integers using comprehension
+    a := [i+1 for i:100]:integer;
+
+    writeStr("Array generated: ");
+    printArray(a,100);
+
+    -- Reverse the array
+    for k in [0:50]:
+        swap(a,k,99-k);
+    endfor;
+
+    writeStr("Reversed array: ");
+    printArray(a,100);
+enddef;
