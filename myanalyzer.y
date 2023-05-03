@@ -163,8 +163,10 @@ types:
 // identifier or array(with possitive integer to indicate size) identifier or more identifiers sep by comma
 identifiers:
 	TK_IDENTIFIER {$$=$1}
+  | DEL_LBLOCK DEL_RBLOCK DEL_COLON types {$$ = template("%s*", $4);}
 	| TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK {$$ = template("%s[%s]",$1,$3);}
 	| identifiers DEL_COMMA TK_IDENTIFIER {$$ = template("%s, %s", $1,$3);};
+
 
 
 
@@ -175,6 +177,7 @@ variable_declarations:
 
 constant_declarations:
 	KW_CONST identifiers AP_ASSIGN input DEL_COLON types DEL_SMCOLON {$$ = template("const %s = %s", $2, $4);};
+
 
 function_declarations:
   KW_DEF identifiers DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types {$$ = template("\n%s (*) %s(%s)", $7, $2, $4);};
@@ -191,7 +194,7 @@ parameter_declarations:
 
 
 complex_type_declarations:
-  KW_COMP identifiers DEL_COLON comp_declarations function_declarations KW_ENDCOMP {$$ = template("\ntypedef struct %s {\n%s\n%s}%s\n %s", $1, $3, $5, $1, $5);};
+  KW_COMP identifiers DEL_COLON comp_declarations function_declarations KW_ENDCOMP {$$ = template("\ntypedef struct %s {\n%s\n%s}%s\n %s", $2, $4, $5, $2, $5);};
 
 
 comp_declarations:
@@ -199,7 +202,7 @@ comp_declarations:
 
 
 comp_variable_declarations:
-  AP_HASHASSIGN identifiers DEL_COLON types DEL_SMCOLON {$$ = template("%s %s", $3, $1)};
+  AP_HASHASSIGN identifiers DEL_COLON types DEL_SMCOLON {$$ = template("%s %s", $4, $2)};
 
 
 comp_function:
@@ -222,8 +225,17 @@ body:
 
 
 expressions:
-  identifiers DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s %s[%s]", $3, $1, $2);}
-  | identifiers DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s %s[%s]", $3, $1, $2);}
+  identifiers {$$ = $1;}
+  | TK_INTEGER {$$ = $1;}
+  | TK_FLOAT {$$ = $1;}
+  | TK_STRING {$$ = $1;}
+  | KW_TRUE {$$ = template("%s" = "1");}
+  | KW_FALSE {$$ = template("%s" = "0");}
+  | DEL_LPAR expressions DEL_RPAR {$$ = template("(%s)" = $2);}
+  | DEL_LBLOCK TK_INTEGER DEL_RBLOCK {$$ = template("[%s]" = $2);}
+  | expressions OP_POWER {$$ = template("[%s]" = $2);}
+
+  | expression
   
 
 
