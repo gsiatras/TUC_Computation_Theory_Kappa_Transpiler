@@ -112,7 +112,7 @@ void showError(){
   exit(-1);
 }
 
-int main() {
-    yylex();
-    return 0;
-}
+; int main() {
+;     yylex();
+;     return 0;
+; }

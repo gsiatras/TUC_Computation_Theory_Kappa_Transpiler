@@ -1,2 +1,0 @@
-flex mylexer1.l
-gcc -o mylexer1 lex.yy.c -lfl

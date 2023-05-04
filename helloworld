@@ -1,5 +1,8 @@
  -- My first Kappa program. File: myprog.ka 
- const  message =  "Hello world!\n" :  str  ; 
+const  message =  "Hello world!\n" :  str  ; 
+i: integer;
  def  main(): 
+ message += 5;
  writeStr(message); 
  enddef  ; 
+ ;
