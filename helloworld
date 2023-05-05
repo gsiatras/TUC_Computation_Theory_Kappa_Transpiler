@@ -3,6 +3,8 @@ const  message =  "Hello world!\n" :  str  ;
 i: integer;
  def  main(): 
  message += 5;
+ i = message;
  writeStr(message); 
+ return i;
  enddef  ; 
- ;
+ 
