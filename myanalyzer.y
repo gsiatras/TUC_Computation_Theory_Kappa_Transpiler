@@ -18,7 +18,12 @@ extern int line_num;
 %define parse.error verbose
 
 
+
 %token <crepr> TK_IDENTIFIER
+%token <crepr> TK_INTEGER
+%token <crepr> TK_FLOAT
+%token <crepr> TK_STRING
+
 
 
 //keywords
@@ -51,9 +56,6 @@ extern int line_num;
 %token KW_OF
 
 
-%token <crepr> TK_INTEGER
-%token <crepr> TK_FLOAT
-%token <crepr> TK_STRING
 
 
 //arithmetic operators
@@ -100,10 +102,13 @@ extern int line_num;
 %type <crepr> main
 %type <crepr> main_body
 %type <crepr> body
+%type <crepr> declarations
+%type <crepr> decl_body
 
 
 //declarations
 %type <crepr> types
+%type <crepr> basic_types
 %type <crepr> complex_type_declarations
 %type <crepr> comp_variable_declarations
 %type <crepr> constant_declarations
@@ -115,12 +120,15 @@ extern int line_num;
 %type <crepr> program
 %type <crepr> identifiers
 %type <crepr> expressions
+%type <crepr> identifier_expressions
 %type <crepr> arithmetic_expressions
 %type <crepr> relational_expressions
 %type <crepr> assign_expressions 
 %type <crepr> functions
+%type <crepr> function_arg
 
 %type <crepr> statements
+%type <crepr> command_statements
 %type <crepr> if_statement
 %type <crepr> for_statement
 %type <crepr> array_statement
@@ -162,11 +170,8 @@ program:
 
 // -----------------------------------------------------------Main--------------------------------------------------------------
 main_body: 
-  main { $$ = template("%s\n",$1);}
-  | complex_type_declarations main_body { $$ = template("%s\n%s\n",$1,$2); }
-  | constant_declarations main_body { $$ = template("%s\n%s\n",$1,$2); }
-  | variable_declarations main_body { $$ = template("%s\n%s\n",$1,$2); }
-  | functions main_body { $$ = template("%s\n%s\n",$1,$2); };
+  decl_body main { $$ = template("%s\n%s\n",$1,$2); }
+  | main { $$ = $1; };
 
 
 main: 
@@ -176,6 +181,10 @@ main:
 
 // =====================================================Types and Identifiers===================================================
 types:
+  DEL_LBLOCK DEL_RBLOCK basic_types { $$ = template("%s*", $3); }
+  | basic_types { $$ = $1; };
+
+basic_types:
 	KW_INT {$$ = template("%s", "int");}
 |	KW_BOOLEAN {$$ = template("%s", "int");}	// no boolean types in c and C uses ints to depict them
 |	KW_SCALAR {$$ = template("%s","double");}
@@ -185,16 +194,27 @@ types:
 // identifier or array(with possitive integer to indicate size) identifier or more identifiers sep by comma
 identifiers:
 	TK_IDENTIFIER  {$$ = $1;}
-	| TK_IDENTIFIER DEL_LBLOCK expressions DEL_RBLOCK {$$ = template("%s[%s]",$1,$3);}
-  | TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK {$$ = template("%s*",$1);}
-	| identifiers DEL_COMMA expressions {$$ = template("%s, %s", $1,$3);};
+	| identifiers DEL_COMMA TK_IDENTIFIER {$$ = template("%s, %s", $1,$3);};
 
 
 
 // ========================================================Declarations========================================================
 //------------------------------------------------------variables and constants-------------------------------------------------
+decl_body:
+  decl_body declarations { $$ = template("%s\n%s", $1, $2); }
+  | declarations { $$ = $1; };
+
+
+declarations:
+  variable_declarations { $$ = $1; }
+  | complex_type_declarations { $$ = $1; }
+  | constant_declarations { $$ = $1; }
+  | functions { $$ = $1; };
+
+
 variable_declarations:
-	identifiers DEL_COLON types DEL_SMCOLON {$$ = template("%s %s; ", $3, $1); };
+	identifiers DEL_COLON basic_types DEL_SMCOLON {$$ = template("%s %s; ", $3, $1); }
+  | TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK basic_types DEL_SMCOLON {$$ = template("%s %s[%s]; ", $5, $1, $3); }
 
 
 constant_declarations:
@@ -205,17 +225,17 @@ constant_declarations:
 
 // -------------------------------------------------functions and function declarations----------------------------------------
 function_declarations:
-  KW_DEF identifiers DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types {$$ = template("\n%s (*) %s(%s)", $7, $2, $4);};
+  KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types {$$ = template("\n%s (*) %s(%s)", $7, $2, $4);};
 
 
 functions: 
-  KW_DEF identifiers DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON {$$ = template("\nvoid %s(%s) {\n%s\n}\n", $2, $4, $7);}
-  | KW_DEF identifiers DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON {$$ = template("\n%s %s(%s) {\n%s\n\n}\n", $7, $2, $4, $9);};
+  KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON {$$ = template("\nvoid %s(%s) {\n%s\n}\n", $2, $4, $7);}
+  | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON {$$ = template("\n%s %s(%s) {\n%s\n\n}\n", $7, $2, $4, $9);};
 
 
 parameter_declarations: 
-  identifiers DEL_COLON types {$$ = template("%s %s", $3, $1);}
-  | identifiers DEL_COLON types DEL_COMMA parameter_declarations {$$ = template("%s %s, %s", $3, $1, $5);};
+  TK_IDENTIFIER DEL_COLON types {$$ = template("%s %s", $3, $1);}
+  | TK_IDENTIFIER DEL_COLON types DEL_COMMA parameter_declarations {$$ = template("%s %s, %s", $3, $1, $5);};
 
 
 
@@ -241,22 +261,24 @@ comp_functions:
 
 // ============================================================Expressions=====================================================
 expressions:
-  %empty {$$ = template("");}  
-  | identifiers {$$ = $1;}
+  identifier_expressions { $$ = $1; }
   | TK_STRING {$$ = $1;}
   | KW_TRUE {$$ = template("%s", "1");}
   | KW_FALSE {$$ = template("%s", "0");}
-  | function_statement
-  | DEL_LPAR expressions DEL_RPAR {$$ = template("(%s)", $2);}
-  | arithmetic_expressions 
-  | relational_expressions
+  | function_statement { $$ = $1; }
+  | arithmetic_expressions { $$ = $1; }
+  | relational_expressions { $$ = $1; }
   | KW_NOT expressions {$$ = template("! %s", $2);}
   | expressions KW_AND expressions {$$ = template("%s && %s", $1, $3);}
   | expressions KW_OR expressions {$$ = template("%s || %s", $1, $3);}
-  | assign_expressions; 
-  | expressions DEL_SMCOLON {$$ =  template("%s", $1);}
-  | expressions DEL_COMMA expressions {$$ =  template("%s, %s", $1, $3);};
+  | DEL_LPAR expressions DEL_RPAR {$$ = template("(%s)", $2);};
   
+  
+identifier_expressions:
+  TK_IDENTIFIER { $$ = $1; }
+  | TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK { $$ = template("%s[%s]", $1, $3); }
+  | TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK { $$ = template("%s[%s]", $1, $3); };
+
 
 arithmetic_expressions:
   TK_INTEGER {$$ = $1;}
@@ -281,82 +303,94 @@ relational_expressions:
 
 
 assign_expressions:
-  expressions AP_ASSIGN expressions {$$ = template("%s = %s", $1, $3);}
-  | expressions AP_PLUSASSIGN expressions {$$ = template("%s += %s", $1, $3);}
-  | expressions AP_MINASSIGN expressions {$$ = template("%s -= %s" , $1, $3);}
-  | expressions AP_MULASSIGN expressions {$$ = template("%s *= %s", $1, $3);}
-  | expressions AP_DIVASSIGN expressions {$$ = template("%s /= %s", $1, $3);}
-  | expressions AP_MODASSIGN expressions {$$ = template("%s %= %s", $1, $3);}; 
+  identifier_expressions AP_ASSIGN expressions {$$ = template("%s = %s", $1, $3);}
+  | identifier_expressions AP_PLUSASSIGN expressions {$$ = template("%s += %s", $1, $3);}
+  | identifier_expressions AP_MINASSIGN expressions {$$ = template("%s -= %s" , $1, $3);}
+  | identifier_expressions AP_MULASSIGN expressions {$$ = template("%s *= %s", $1, $3);}
+  | identifier_expressions AP_DIVASSIGN expressions {$$ = template("%s /= %s", $1, $3);}
+  | identifier_expressions AP_MODASSIGN expressions {$$ = template("%s %= %s", $1, $3);}; 
 
 
   //==============================================================Statements====================================================
 statements:
-  %empty {$$ = template("");} 
-  | if_statement statements { $$ = template("%s\n%s",$1,$2); }
-  | for_statement statements { $$ = template("%s\n%s",$1,$2); }
-  | array_statement statements { $$ = template("%s\n%s",$1,$2); }
-  | while_statement statements { $$ = template("%s\n%s",$1,$2); }
+  if_statement DEL_SMCOLON { $$ = template("%s", $1); }
+  | for_statement DEL_SMCOLON { $$ = template("%s", $1); }
+  | array_statement DEL_SMCOLON { $$ = template("%s", $1); }
+  | while_statement DEL_SMCOLON { $$ = template("%s", $1); }
   | KW_BREAK DEL_SMCOLON {$$ = template("break;");}
-  | KW_CONTINUE {$$ = template("continue;");}
-  | return_statement 
-  | function_statement statements { $$ = template("%s\n%s",$1,$2); }
-  | DEL_SMCOLON statements { $$ = template(";\n%s",$2); };
+  | KW_CONTINUE DEL_SMCOLON {$$ = template("continue;");}
+  | assign_expressions DEL_SMCOLON {$$ = template("%s;", $1);}; 
+  | return_statement DEL_SMCOLON { $$ = template("%s;", $1); }
+  | function_statement DEL_SMCOLON{ $$ = template("%s;", $1); };
 
+command_statements:
+  statements { $$ = $1; }
+  | command_statements statements { $$ = template("%s\n%s", $1, $2); }
+  | command_statements variable_declarations { $$ = template("%s\n%s", $1, $2); }
+  | variable_declarations { $$ = $1; }
+  | command_statements constant_declarations { $$ = template("%s\n%s", $1, $2); }
+  | constant_declarations { $$ = $1; };
 
 
 //if else statements
 if_statement:
-  KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON statements DEL_SMCOLON KW_ENDIF {$$ = template("if (%s) {\n %s;\n}", $3, $6);}
-  | KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON statements DEL_SMCOLON KW_ELSE statements DEL_SMCOLON KW_ENDIF {$$ = template("if (%s) {\n\t%s;\n} else {\n\t %s\n}", $3, $6);};
+  KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF {$$ = template("if (%s) {\n %s\n}", $3, $6);}
+  | KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE command_statements KW_ENDIF {$$ = template("if (%s) {\n\t%s;\n} else {\n\t %s\n}", $3, $6, $8);};
 
 
 //for statements
 for_statement:
-  KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON statements KW_ENDFOR DEL_SMCOLON {$$ = template("for (int %s = %s; %s < %s; %s++) {\n\t%s;\n}", $2, $5, $2, $7, $2, $10);}
-  | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON statements DEL_SMCOLON KW_ENDFOR DEL_SMCOLON {$$ = template("for (int %s = %s; %s < %s; %s = %s %s) {\n\t%s\n}", $2, $5, $2, $7, $2, $2, $9, $12);};
+  KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR  {$$ = template("for (int %s = %s; %s < %s; %s++) {\n\t%s;\n}", $2, $5, $2, $7, $2, $10);}
+  | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements DEL_SMCOLON KW_ENDFOR {$$ = template("for (int %s = %s; %s < %s; %s = %s %s) {\n\t%s\n}", $2, $5, $2, $7, $2, $2, $9, $12);};
 
 
 //array statements
 array_statement:
-  integral_array
-  | other_array
+  integral_array { $$ = $1; }
+  | other_array { $$ = $1; };
 
 
 integral_array:
-  identifiers AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR identifiers DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types DEL_SMCOLON {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(%s %s = 0; %s < %s; ++%s) {\n\t %s[%s] = %s}", $11, $1, $11, $8, $11, $11, $4, $8, $4, $1, $4, $4);};
+  identifiers AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR identifiers DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(%s %s = 0; %s < %s; ++%s) {\n\t %s[%s] = %s}", $11, $1, $11, $8, $11, $11, $4, $8, $4, $1, $4, $4);};
 
 
 other_array:
-  identifiers AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR identifiers DEL_COLON types KW_IN identifiers KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types DEL_SMCOLON {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(int %s10_i = 0; %s10_i < %s12; ++%s10_i) {\n\t %s1[%s10_i] = %s4}", $15, $1, $15, $12, $15, $10, $10, $12, $10, $1, $10, $4);};
+  identifiers AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR identifiers DEL_COLON types KW_IN identifiers KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(int %s10_i = 0; %s10_i < %s12; ++%s10_i) {\n\t %s1[%s10_i] = %s4}", $15, $1, $15, $12, $15, $10, $10, $12, $10, $1, $10, $4);};
 
 
 //while statements
 while_statement:
-  KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON statements KW_ENDWHILE DEL_SMCOLON {$$ = template("while (%s) {\n\t statements\n}", $3, $6);};
+  KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE {$$ = template("while (%s) {\n\t statements\n}", $3, $6);};
   
  
 //return statements
 return_statement:
-  KW_RETURN DEL_SMCOLON {$$ = template("return;");}
-  | KW_RETURN expressions {$$ = template("return %s;", $2);};
+  KW_RETURN {$$ = template("return");}
+  | KW_RETURN expressions {$$ = template("return %s", $2);};
 
 
 //function_statements
 function_statement:
-  identifiers DEL_LPAR expressions DEL_RPAR {$$ = template("%s(%s)", $1, $3);}
-  | identifiers DEL_LPAR expressions DEL_COMMA expressions DEL_RPAR {$$ = template("%s(%s, %s)", $1, $3, $5);};
+  TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR {$$ = template("%s(%s)", $1, $3);};
+  
+
+function_arg:
+  %empty { $$ = ""; }
+  | expressions { $$ = $1; }
+  | function_arg DEL_COMMA expressions { $$ = template("%s, %s", $1, $3); }
 
 
 body: 
-  %empty {$$ = template("");}
-  | body expressions { $$ = template("%s\n%s;",$1,$2); } 
+  statements { $$ = $1; }
+  | variable_declarations { $$ = $1; }
+  | constant_declarations { $$ = $1; }
   | body statements { $$ = template("%s\n%s",$1,$2); }
-  | body constant_declarations { $$ = template("%s\n%s",$1,$2); }
-  | body variable_declarations { $$ = template("%s\n%s",$1,$2); };
+  | body variable_declarations { $$ = template("%s\n%s",$1,$2); }
+  | body constant_declarations { $$ = template("%s\n%s",$1,$2); };
 
 
 %%
 int main(void) {
-    yyparse();
-    return 0;
+    if ( yyparse() != 0 )
+    printf("\nRejected!\n");
 }

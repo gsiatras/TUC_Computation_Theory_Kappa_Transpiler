@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.5.1.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -31,8 +31,9 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_MYANALYZER_TAB_H_INCLUDED
 # define YY_YY_MYANALYZER_TAB_H_INCLUDED
@@ -44,72 +45,77 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    TK_IDENTIFIER = 258,
-    KW_INT = 259,
-    KW_SCALAR = 260,
-    KW_STR = 261,
-    KW_BOOLEAN = 262,
-    KW_TRUE = 263,
-    KW_FALSE = 264,
-    KW_CONST = 265,
-    KW_IF = 266,
-    KW_ELSE = 267,
-    KW_ENDIF = 268,
-    KW_FOR = 269,
-    KW_IN = 270,
-    KW_ENDFOR = 271,
-    KW_WHILE = 272,
-    KW_ENDWHILE = 273,
-    KW_BREAK = 274,
-    KW_CONTINUE = 275,
-    KW_NOT = 276,
-    KW_AND = 277,
-    KW_OR = 278,
-    KW_DEF = 279,
-    KW_ENDDEF = 280,
-    KW_MAIN = 281,
-    KW_RETURN = 282,
-    KW_COMP = 283,
-    KW_ENDCOMP = 284,
-    KW_OF = 285,
-    TK_INTEGER = 286,
-    TK_FLOAT = 287,
-    TK_STRING = 288,
-    OP_PLUS = 289,
-    OP_MINUS = 290,
-    OP_MULT = 291,
-    OP_DIV = 292,
-    OP_MOD = 293,
-    OP_POWER = 294,
-    RP_EQUALS = 295,
-    RP_NOTEQUALS = 296,
-    RP_LESS = 297,
-    RP_LESSEQUALS = 298,
-    RP_MORE = 299,
-    RP_MOREEQUALS = 300,
-    AP_ASSIGN = 301,
-    AP_HASHASSIGN = 302,
-    AP_PLUSASSIGN = 303,
-    AP_MINASSIGN = 304,
-    AP_MULASSIGN = 305,
-    AP_DIVASSIGN = 306,
-    AP_MODASSIGN = 307,
-    AP_COLONASSIGN = 308,
-    AP_ARROWASSIGN = 309,
-    DEL_SMCOLON = 310,
-    DEL_LPAR = 311,
-    DEL_RPAR = 312,
-    DEL_COMMA = 313,
-    DEL_LBLOCK = 314,
-    DEL_RBLOCK = 315,
-    DEL_COLON = 316,
-    DEL_DOT = 317
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    TK_IDENTIFIER = 258,           /* TK_IDENTIFIER  */
+    TK_INTEGER = 259,              /* TK_INTEGER  */
+    TK_FLOAT = 260,                /* TK_FLOAT  */
+    TK_STRING = 261,               /* TK_STRING  */
+    KW_INT = 262,                  /* KW_INT  */
+    KW_SCALAR = 263,               /* KW_SCALAR  */
+    KW_STR = 264,                  /* KW_STR  */
+    KW_BOOLEAN = 265,              /* KW_BOOLEAN  */
+    KW_TRUE = 266,                 /* KW_TRUE  */
+    KW_FALSE = 267,                /* KW_FALSE  */
+    KW_CONST = 268,                /* KW_CONST  */
+    KW_IF = 269,                   /* KW_IF  */
+    KW_ELSE = 270,                 /* KW_ELSE  */
+    KW_ENDIF = 271,                /* KW_ENDIF  */
+    KW_FOR = 272,                  /* KW_FOR  */
+    KW_IN = 273,                   /* KW_IN  */
+    KW_ENDFOR = 274,               /* KW_ENDFOR  */
+    KW_WHILE = 275,                /* KW_WHILE  */
+    KW_ENDWHILE = 276,             /* KW_ENDWHILE  */
+    KW_BREAK = 277,                /* KW_BREAK  */
+    KW_CONTINUE = 278,             /* KW_CONTINUE  */
+    KW_NOT = 279,                  /* KW_NOT  */
+    KW_AND = 280,                  /* KW_AND  */
+    KW_OR = 281,                   /* KW_OR  */
+    KW_DEF = 282,                  /* KW_DEF  */
+    KW_ENDDEF = 283,               /* KW_ENDDEF  */
+    KW_MAIN = 284,                 /* KW_MAIN  */
+    KW_RETURN = 285,               /* KW_RETURN  */
+    KW_COMP = 286,                 /* KW_COMP  */
+    KW_ENDCOMP = 287,              /* KW_ENDCOMP  */
+    KW_OF = 288,                   /* KW_OF  */
+    OP_PLUS = 289,                 /* OP_PLUS  */
+    OP_MINUS = 290,                /* OP_MINUS  */
+    OP_MULT = 291,                 /* OP_MULT  */
+    OP_DIV = 292,                  /* OP_DIV  */
+    OP_MOD = 293,                  /* OP_MOD  */
+    OP_POWER = 294,                /* OP_POWER  */
+    RP_EQUALS = 295,               /* RP_EQUALS  */
+    RP_NOTEQUALS = 296,            /* RP_NOTEQUALS  */
+    RP_LESS = 297,                 /* RP_LESS  */
+    RP_LESSEQUALS = 298,           /* RP_LESSEQUALS  */
+    RP_MORE = 299,                 /* RP_MORE  */
+    RP_MOREEQUALS = 300,           /* RP_MOREEQUALS  */
+    AP_ASSIGN = 301,               /* AP_ASSIGN  */
+    AP_HASHASSIGN = 302,           /* AP_HASHASSIGN  */
+    AP_PLUSASSIGN = 303,           /* AP_PLUSASSIGN  */
+    AP_MINASSIGN = 304,            /* AP_MINASSIGN  */
+    AP_MULASSIGN = 305,            /* AP_MULASSIGN  */
+    AP_DIVASSIGN = 306,            /* AP_DIVASSIGN  */
+    AP_MODASSIGN = 307,            /* AP_MODASSIGN  */
+    AP_COLONASSIGN = 308,          /* AP_COLONASSIGN  */
+    AP_ARROWASSIGN = 309,          /* AP_ARROWASSIGN  */
+    DEL_SMCOLON = 310,             /* DEL_SMCOLON  */
+    DEL_LPAR = 311,                /* DEL_LPAR  */
+    DEL_RPAR = 312,                /* DEL_RPAR  */
+    DEL_COMMA = 313,               /* DEL_COMMA  */
+    DEL_LBLOCK = 314,              /* DEL_LBLOCK  */
+    DEL_RBLOCK = 315,              /* DEL_RBLOCK  */
+    DEL_COLON = 316,               /* DEL_COLON  */
+    DEL_DOT = 317                  /* DEL_DOT  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
@@ -120,7 +126,7 @@ union YYSTYPE
 
   char* crepr;
 
-#line 124 "myanalyzer.tab.h"
+#line 130 "myanalyzer.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -131,6 +137,8 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE yylval;
 
+
 int yyparse (void);
+
 
 #endif /* !YY_YY_MYANALYZER_TAB_H_INCLUDED  */

@@ -19,7 +19,7 @@ enddef;
 
 def main(): 
    a = readInteger();
-   b = readInteger()
+   b = readInteger();
    add(a, b); -- Here you can see some dummy comments!
 enddef;
 
