@@ -2,7 +2,8 @@
 const  message =  "Hello world!\n" :  str  ; 
 i: integer;
  def  main(): 
- message += 5;
+ number = (number * 1103515245 + 12345) % 2147483648;
+ i = 5 % 5;
  i = message;
  writeStr(message); 
  return i;

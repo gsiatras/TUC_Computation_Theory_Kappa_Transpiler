@@ -6,6 +6,9 @@
 -- 1. The initial value of #number (this corresopnds to the seed of the generator).
 -- 2. The value of #max_int ( it corresponds to the maximum value returned by the generator).
 -- Then, to get a random number, call the next() method and use the returned value.
+
+
+
 comp RandomNumberGenerator:
     #number:integer;
     def next()->integer:
@@ -27,7 +30,7 @@ def swap(a[]:integer, i:integer, j:integer):
 enddef;
 
 -- Impelementation of the quick sort algorithm
-def quickSort(a[]:integer, low:integer, high:integer) -> void:
+def quickSort(a[]:integer, low:integer, high:integer):
     pivot, i, j : integer;
     if (low < high):
         pivot = low;

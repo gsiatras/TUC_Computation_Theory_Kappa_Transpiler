@@ -19,6 +19,7 @@ def printArray(a[]:integer, size:integer):
         writeStr(", ");
     endfor;
     writeStr("\n");
+    
 enddef;
 
 def main():
@@ -29,7 +30,6 @@ def main():
 
     writeStr("Array generated: ");
     printArray(a,100);
-
     -- Reverse the array
     for k in [0:50]:
         swap(a,k,99-k);
