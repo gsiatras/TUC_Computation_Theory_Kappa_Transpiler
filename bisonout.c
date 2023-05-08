@@ -3,10 +3,13 @@
 #include "kappalib.h"
 
 
+#define SELF struck RandomNumberGenerator *self
 typedef struct RandomNumberGenerator {
 int number;
 
 int (*next)(self, );
+
+void (*setAddress)(self, char* s, int n, char* c);
 } RandomNumberGenerator;
 
  int next(self, ) {
@@ -17,7 +20,14 @@ if (self->number < 0) {
 return self->number;
 } 
 
-const ctor_RandomNumberGenerator =  { .next } ;
+void setAddress(self, char* s, int n, char* c) {
+self->street = s;
+self->number = n;
+self->city = c;
+} 
+
+const ctor_RandomNumberGenerator =  { .setAddress } ;
+#under SELF
 
 void swap(int *a, int i, int j) {
 int temp; 

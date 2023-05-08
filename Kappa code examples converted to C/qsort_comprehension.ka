@@ -26,7 +26,7 @@ def swap(a[]:scalar, i:integer, j:integer):
 enddef;
 
 -- Impelementation of the quick sort algorithm
-def quickFSort(a[]:scalar, low:integer, high:integer) -> void:
+def quickFSort(a[]:scalar, low:integer, high:integer):
     pivot, i, j : integer;
     if (low < high):
         pivot = low;

@@ -4,13 +4,17 @@
 #include <string.h>
 #include "cgen.h"
 
+#define MAX_STRING_LENGTH 1024 
+
 
 int yylex(void);
 extern int line_num;
 
-char* comp_function_output;
+char** comp_function_output = NULL;
 char* comp_func_output2;
+int num_functions = 0;
 
+char* buffer;
 %}
 
 
@@ -255,7 +259,23 @@ parameter_declarations:
 
 //-----------------------------------------------------------complex type------------------------------------------------------ 
 complex_type_declarations:
-  KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP DEL_SMCOLON {$$ = template("\ntypedef struct %s {\n%s\n} %s;\n\n %s\n\nconst ctor_%s = %s;", $2, $4, $2, comp_function_output, $2, comp_func_output2);};
+  KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP DEL_SMCOLON { // get all the function output strings in one buffer to print them
+    buffer = malloc(1);
+
+    // loop through the array allocate space 
+    for (int i = 0; i < num_functions; i++) {
+      char* curr_string = comp_function_output[i];
+      buffer = realloc(buffer,  strlen(buffer) + strlen(curr_string) + 3); // +2 for 2new line and null terminator
+
+      // add to buffer
+      strcat(buffer, curr_string);
+      printf("Buffers:%s\n", curr_string);
+      if (i != num_functions -1) {
+        strcat(buffer, "\n\n");
+      }
+    }
+    $$ = template("\n#define SELF struck %s *self\ntypedef struct %s {\n%s\n} %s;\n\n %s\n\nconst ctor_%s = %s;\n#under SELF", $2, $2, $4, $2, buffer, $2, comp_func_output2); 
+    free(buffer); };
 
 
 comp_body:
@@ -275,9 +295,41 @@ comp_identifiers:
   
 
 comp_functions:
-  KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON 
-  { $$ = template("\n%s (*%s)(self, %s);", $7, $2, $4);  comp_function_output = strdup(template("%s %s(self, %s) {\n%s\n} ", $7, $2, $4, $9)); 
-  comp_func_output2 = strdup(template(" { .%s } ", $2));};
+  KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON 
+  { printf("\n3\n");
+    // add every function output to a char** array to print after the comp
+    // raise counter
+    num_functions = num_functions + 1;
+
+    // allocate space
+    comp_function_output = realloc(comp_function_output, num_functions * sizeof(char*));
+
+    // add output string to array
+    comp_function_output[num_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char));
+    
+    comp_function_output[num_functions -1] = strdup(template("void %s(self, %s) {\n%s\n} ", $2, $4, $7)); 
+
+    // do the normal $$
+    $$ = template("\nvoid (*%s)(self, %s);", $2, $4);
+    comp_func_output2 = strdup(template(" { .%s } ", $2));}
+
+  | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON 
+  {  
+    // add every function output to a char** array to print after the comp
+    // raise counter
+    num_functions = num_functions +1;
+
+    // allocate space
+    comp_function_output = realloc(comp_function_output, num_functions * sizeof(char*));
+
+    // add output string to array
+    comp_function_output[num_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char));
+
+    comp_function_output[num_functions - 1] = strdup(template("%s %s(self, %s) {\n%s\n} ", $7, $2, $4, $9));
+    //printf("\n%s\n", comp_function_output[num_functions - 1]);
+    // do the normal $$
+    $$ = template("\n%s (*%s)(self, %s);", $7, $2, $4); 
+    comp_func_output2 = strdup(template(" { .%s } ", $2));};
 
 
 
@@ -361,13 +413,13 @@ command_statements:
 //if else statements
 if_statement:
   KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF {$$ = template("if (%s) {\n %s\n}", $3, $6);}
-  | KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE command_statements KW_ENDIF {$$ = template("if (%s) {\n%s\n} else {\n%s\n}", $3, $6, $8);};
+  | KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE DEL_COLON command_statements KW_ENDIF {$$ = template("if (%s) {\n%s\n} else {\n%s\n}", $3, $6, $9);};
 
 
 //for statements
 for_statement:
   KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR  {$$ = template("for (int %s = %s; %s < %s; %s++) {\n%s\n}", $2, $5, $2, $7, $2, $10);}
-  | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements DEL_SMCOLON KW_ENDFOR {$$ = template("for (int %s = %s; %s < %s; %s = %s %s) {\n%s\n}", $2, $5, $2, $7, $2, $2, $9, $12);};
+  | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR {$$ = template("for (int %s = %s; %s < %s; %s = %s %s) {\n%s\n}", $2, $5, $2, $7, $2, $2, $9, $12);};
 
 
 //array statements
@@ -377,11 +429,11 @@ array_statement:
 
 
 integral_array:
-  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(%s %s = 0; %s < %s; ++%s) {\n\t %s[%s] = %s}", $11, $1, $11, $8, $11, $11, $6, $6, $8, $6, $1, $6, $4);};
+  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(%s %s = 0; %s < %s; ++%s) {\n %s[%s] = %s\n}", $11, $1, $11, $8, $11, $11, $6, $6, $8, $6, $1, $6, $4);};
 
 
 other_array:
-  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(int %s10_i = 0; %s10_i < %s12; ++%s10_i) {\n\t %s1[%s10_i] = %s4}", $15, $1, $15, $12, $15, $10, $10, $12, $10, $1, $10, $4);};
+  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(int %s10_i = 0; %s10_i < %s12; ++%s10_i) {\n\t %s1[%s10_i] = %s4\n}", $15, $1, $15, $12, $15, $10, $10, $12, $10, $1, $10, $4);};
 
 
 //while statements
@@ -419,6 +471,10 @@ body:
 
 %%
 int main(void) {
-    if ( yyparse() != 0 )
-    printf("\nRejected!\n");
+  if ( yyparse() != 0 )
+  for (int i = 0; i < num_functions; i++) {
+    free(comp_function_output[i]);
+  }
+  free(comp_function_output);
+  printf("\nRejected!\n");
 }

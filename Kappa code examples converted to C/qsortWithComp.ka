@@ -18,6 +18,11 @@ comp RandomNumberGenerator:
         endif;
         return #number;
     enddef;
+    def setAddress(s: str, n: integer, c: str):
+    	#street = s;
+    	#number = n;
+    	#city = c;
+    enddef;
 endcomp;
 
 -- Swap the elements of array a at positions i and j
