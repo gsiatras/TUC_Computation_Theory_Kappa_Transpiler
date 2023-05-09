@@ -10,11 +10,21 @@
 int yylex(void);
 extern int line_num;
 
+
 char** comp_function_output = NULL;
-char* comp_func_output2;
+char** comp_function_names = NULL;
+char** cfnames = NULL;
+char** comp_names = NULL;
+
 int num_functions = 0;
+int num_comps = 0;
+int total_functions = 0;
+
+int cflag = 0;
 
 char* buffer;
+char* namebuffer;
+char* dot_call;
 %}
 
 
@@ -122,7 +132,6 @@ char* buffer;
 %type <crepr> comp_variable_declarations
 %type <crepr> constant_declarations
 %type <crepr> variable_declarations
-%type <crepr> function_declarations
 %type <crepr> parameter_declarations
 %type <crepr> comp_functions
 %type <crepr> comp_body
@@ -135,6 +144,7 @@ char* buffer;
 %type <crepr> identifier_expressions
 %type <crepr> arithmetic_expressions
 %type <crepr> relational_expressions
+%type <crepr> comp_expressions
 %type <crepr> assign_expressions 
 %type <crepr> functions
 %type <crepr> function_arg
@@ -151,6 +161,7 @@ char* buffer;
 %type <crepr> function_statement
 
 
+
 %start program
 
 %%
@@ -158,7 +169,8 @@ char* buffer;
 // ================================================================Program Body=================================================
 program:
       main_body                  
-      { 
+      {   
+       
           $$ = template("%s",$1); 
           if (yyerror_count == 0) 
           {     
@@ -194,7 +206,26 @@ main:
 // =====================================================Types and Identifiers===================================================
 types:
   DEL_LBLOCK DEL_RBLOCK basic_types { $$ = template("%s*", $3); }
-  | basic_types { $$ = $1; };
+  | basic_types { $$ = $1; }
+  | TK_IDENTIFIER {
+    int found = 0;
+      //printf("\n%d\n", num_comps);
+      for (int i = 0; i < num_comps; i++) {
+        //printf("\n%s || %s\n", comp_names[i], $1);
+        if (strcmp(comp_names[i], $1) == 0) {
+          found = 1;
+          //printf("\nFound = 1\n");
+          $$ = $1;
+          break;
+        }
+      }
+      if (found == 0) {
+        //printf("\n1\n");
+        yyerror("There is no complex type %s declared.", $1);
+        YYERROR;
+
+      }
+  }
 
 basic_types:
 	KW_INT {$$ = template("%s", "int");}
@@ -219,7 +250,7 @@ decl_body:
 
 declarations:
   variable_declarations { $$ = $1; }
-  | complex_type_declarations { $$ = $1; }
+  | complex_type_declarations { $$ = $1; } 
   | constant_declarations { $$ = $1; }
   | functions { $$ = $1; };
 
@@ -228,8 +259,10 @@ variable_declarations:
 	identifiers DEL_COLON basic_types DEL_SMCOLON {$$ = template("%s %s; ", $3, $1); }
   | TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON basic_types DEL_SMCOLON {$$ = template("%s %s[%s]; ", $6, $1, $3); }
 
+
 comp_variables:
   identifiers DEL_COLON TK_IDENTIFIER DEL_SMCOLON {$$ = template("%s %s = ctor_%s; ", $3, $1, $3); }
+
 
 constant_declarations:
 	KW_CONST identifiers AP_ASSIGN expressions DEL_COLON types DEL_SMCOLON {$$ = template("const %s = %s;", $2, $4);};
@@ -238,10 +271,6 @@ constant_declarations:
 
 
 // -------------------------------------------------functions and function declarations----------------------------------------
-function_declarations:
-  KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types {$$ = template("\n%s (*) %s(%s)", $7, $2, $4);};
-
-
 functions: 
   KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON {$$ = template("\nvoid %s(%s) {\n%s\n}\n", $2, $4, $7);}
   | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON {$$ = template("\n%s %s(%s) {\n%s\n\n}\n", $7, $2, $4, $9);};
@@ -249,7 +278,7 @@ functions:
 
 parameter_declarations: 
   %empty { $$ = "" ;}
-  |TK_IDENTIFIER DEL_COLON types {$$ = template("%s %s", $3, $1);}
+  | TK_IDENTIFIER DEL_COLON types {$$ = template("%s %s", $3, $1);}
   | TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON types {$$ = template("%s *%s", $5, $1);}
   | TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON types DEL_COMMA parameter_declarations {$$ = template("%s *%s, %s", $5, $1, $7);}
   | TK_IDENTIFIER DEL_COLON types DEL_COMMA parameter_declarations {$$ = template("%s %s, %s", $3, $1, $5);};
@@ -259,23 +288,63 @@ parameter_declarations:
 
 //-----------------------------------------------------------complex type------------------------------------------------------ 
 complex_type_declarations:
-  KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP DEL_SMCOLON { // get all the function output strings in one buffer to print them
+  KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP DEL_SMCOLON { // reset comp flag
+    cflag = 0;
+    // get all the function output strings in one buffer to print them
     buffer = malloc(1);
+    namebuffer = malloc(1);
 
+    //printf("1\n");
+    //printf("nf%d\n", num_functions);
     // loop through the array allocate space 
     for (int i = 0; i < num_functions; i++) {
+      //printf("2\n");
       char* curr_string = comp_function_output[i];
-      buffer = realloc(buffer,  strlen(buffer) + strlen(curr_string) + 3); // +2 for 2new line and null terminator
+      char* name_string = comp_function_names[i];
+
+      //printf("2.5\n");
+      buffer = realloc(buffer,  strlen(buffer) + strlen(curr_string) + 3); // +3 for 2new line and null terminator
+
+      namebuffer = realloc(namebuffer, strlen(namebuffer) + strlen(name_string) + 3); // +3 for comma space and null terminator
+      //printf("3\n");
 
       // add to buffer
       strcat(buffer, curr_string);
-      printf("Buffers:%s\n", curr_string);
+      strcat(namebuffer, name_string);
+      //printf("Buffers:%s\n", name_string);
       if (i != num_functions -1) {
         strcat(buffer, "\n\n");
+        strcat(namebuffer, ", ");
       }
+
+
     }
-    $$ = template("\n#define SELF struck %s *self\ntypedef struct %s {\n%s\n} %s;\n\n %s\n\nconst ctor_%s = %s;\n#under SELF", $2, $2, $4, $2, buffer, $2, comp_func_output2); 
-    free(buffer); };
+
+    printf("\n%s\n", $2);
+    // store the comp name
+    // raise counter
+    num_comps = num_comps + 1;
+
+    // allocate space
+    comp_names = realloc(comp_names, num_comps * sizeof(char*));
+
+    // add output string to array
+    comp_names[num_comps - 1] = malloc(MAX_STRING_LENGTH * sizeof(char));
+
+    comp_names[num_comps - 1] = strdup(template("%s", $2)); 
+
+    printf("\n%s\n", comp_names[num_comps -1]);
+
+    for(int i = 0; i < num_comps; i++){
+      printf("\n%s\n", comp_names[i]);
+    }
+
+    $$ = template("\n#define SELF struct %s *self\ntypedef struct %s {\n%s\n} %s;\n\n%s\n\nconst ctor_%s = { %s };\n#under SELF", $2, $2, $4, $2, buffer, $2, namebuffer); 
+
+   
+    num_functions = 0;
+
+    };
 
 
 comp_body:
@@ -286,50 +355,89 @@ comp_body:
 
 
 comp_variable_declarations:
-  comp_identifiers DEL_COLON types DEL_SMCOLON {$$ = template("%s %s;", $3, $1);};
+  comp_identifiers DEL_COLON types DEL_SMCOLON {
+  // raise comp flag
+  cflag = 1;
+  $$ = template("%s %s;", $3, $1);};
+  
 
 
 comp_identifiers:
   AP_HASHASSIGN TK_IDENTIFIER { $$ = $2; }
+  | AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK {$$ = template("%s[%s]", $2, $4);};
   | AP_HASHASSIGN TK_IDENTIFIER DEL_COMMA comp_identifiers {$$ = template("%s, %s", $2, $4);};
   
 
 comp_functions:
   KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON 
-  { printf("\n3\n");
-    // add every function output to a char** array to print after the comp
+  {
+    // add every function outputs to a char** array to print after the comp
     // raise counter
     num_functions = num_functions + 1;
+    total_functions = total_functions + 1;
+
 
     // allocate space
     comp_function_output = realloc(comp_function_output, num_functions * sizeof(char*));
 
+    comp_function_names = realloc(comp_function_names, num_functions * sizeof(char*));
+
+    cfnames = realloc(cfnames, total_functions * sizeof(char*));
+
+
     // add output string to array
     comp_function_output[num_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char));
-    
-    comp_function_output[num_functions -1] = strdup(template("void %s(self, %s) {\n%s\n} ", $2, $4, $7)); 
 
+    comp_function_names[num_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char*));
+
+    cfnames[total_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char*));
+    
+
+    comp_function_output[num_functions - 1] = strdup(template("void %s(self%s%s) {\n%s\n} ", $2, strlen($4) != 0  ? ", " : "", $4, $7)); 
+
+    comp_function_names[num_functions - 1] = strdup(template(".%s=%s", $2, $2));
+
+    cfnames[total_functions - 1] = strdup(template("%s", $2));
+
+    //printf("\n%s\n", comp_function_names[num_functions - 1]);
     // do the normal $$
-    $$ = template("\nvoid (*%s)(self, %s);", $2, $4);
-    comp_func_output2 = strdup(template(" { .%s } ", $2));}
+    $$ = template("\nvoid (*%s)(self%s%s);", $2, ($4[0] != '\0') ? ", " : "", $4);
+    } 
 
   | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON 
-  {  
+  { 
     // add every function output to a char** array to print after the comp
     // raise counter
     num_functions = num_functions +1;
+    total_functions = total_functions + 1;
 
     // allocate space
     comp_function_output = realloc(comp_function_output, num_functions * sizeof(char*));
 
+    comp_function_names = realloc(comp_function_names, num_functions * sizeof(char*));
+
+    cfnames = realloc(cfnames, total_functions * sizeof(char*));
+
+
     // add output string to array
     comp_function_output[num_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char));
 
-    comp_function_output[num_functions - 1] = strdup(template("%s %s(self, %s) {\n%s\n} ", $7, $2, $4, $9));
-    //printf("\n%s\n", comp_function_output[num_functions - 1]);
+    comp_function_names[num_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char*));
+
+    cfnames[total_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char*));
+
+
+    cfnames[total_functions - 1] = strdup(template("%s", $2));
+
+    comp_function_output[num_functions - 1] = strdup(template("%s %s(self%s%s) {\n%s\n} ", $7, $2, ($4[0] != '\0') ? ", " : "", $4 ,$9));
+
+    comp_function_names[num_functions - 1] = strdup(template(".%s=%s", $2, $2));
+
+
+    //printf("\n%s\n", comp_function_names[num_functions - 1]);
     // do the normal $$
-    $$ = template("\n%s (*%s)(self, %s);", $7, $2, $4); 
-    comp_func_output2 = strdup(template(" { .%s } ", $2));};
+    $$ = template("\n%s (*%s)(self%s%s);", $7, $2, ($4[0] != '\0') ? ", " : "", $4);
+    };
 
 
 
@@ -346,15 +454,30 @@ expressions:
   | KW_NOT expressions {$$ = template("! %s", $2);}
   | expressions KW_AND expressions {$$ = template("%s && %s", $1, $3);}
   | expressions KW_OR expressions {$$ = template("%s || %s", $1, $3);}
-  | DEL_LPAR expressions DEL_RPAR {$$ = template("(%s)", $2);}
-  | expressions DEL_DOT expressions { $$ = template("%s.%s", $1, $3); };
+  | DEL_LPAR expressions DEL_RPAR {$$ = template("(%s)", $2);};
+
+
+
+comp_expressions:
+  expressions DEL_DOT expressions { 
+    //printf("1\n");
+    dot_call = strdup(template("%s", $1));
+    $$ = template("%s.%s", $1, $3); };
+
   
   
 identifier_expressions:
   TK_IDENTIFIER { $$ = $1; }
-  | AP_HASHASSIGN TK_IDENTIFIER {$$ = template("self->%s", $2);};
+  | AP_HASHASSIGN TK_IDENTIFIER { 
+    //printf("\nflag: %d\n", cflag);
+    if (cflag == 1) {$$ = template("self->%s", $2);}
+    else {$$ = template("%s", $2);} }
+  | AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK identifier_expressions DEL_RBLOCK { 
+    if (cflag == 1) {$$ = template("self->%s[%s]", $2, $4);}
+    else {$$ = template("%s[%s]", $2, $4);} }
   | TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK { $$ = template("%s[%s]", $1, $3); }
-  | TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK { $$ = template("%s[%s]", $1, $3); };
+  | TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK { $$ = template("%s[%s]", $1, $3); }
+  | comp_expressions { $$ = $1; };
 
 
 arithmetic_expressions:
@@ -399,6 +522,7 @@ statements:
   | assign_expressions DEL_SMCOLON {$$ = template("%s;", $1);}; 
   | return_statement DEL_SMCOLON { $$ = template("%s;", $1); }
   | function_statement DEL_SMCOLON { $$ = template("%s;", $1); };
+  | comp_expressions DEL_SMCOLON { $$ = template("%s;", $1); };
 
 
 command_statements:
@@ -449,13 +573,28 @@ return_statement:
 
 //function_statements
 function_statement:
-  TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR {$$ = template("%s(%s)", $1, $3);};
+  TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR {
+  int found = 0;
+  for (int i=0; i < total_functions; i++) {
+    //printf("%s || %s", $1, cfnames[i]);
+    if (strcmp(cfnames[i], $1) == 0){
+      //printf("2\n");
+      //printf("%s\n", dot_call);
+      $$ = template("%s(&%s%s)", $1, dot_call, $3);
+      found = 1;
+      break;       
+    }
+  } 
+  if (found == 0) {
+    $$ = template("%s(%s)", $1, $3);
+    }
+  };
   
 
 function_arg:
   %empty { $$ = ""; }
-  | expressions { $$ = $1; }
-  | function_arg DEL_COMMA expressions { $$ = template("%s, %s", $1, $3); }
+  | expressions { $$ = template(",%s", $1);}
+  | function_arg DEL_COMMA expressions { $$ = template(", %s, %s", $1, $3); }
 
 
 body: 
@@ -463,18 +602,16 @@ body:
   | variable_declarations { $$ = $1; }
   | constant_declarations { $$ = $1; }
   | comp_variables { $$ = $1; }
-  | body statements { $$ = template("%s\n%s",$1,$2); }
-  | body variable_declarations { $$ = template("%s\n%s",$1,$2); }
-  | body constant_declarations { $$ = template("%s\n%s",$1,$2); }
-  | body comp_variables { $$ = template("%s\n%s",$1,$2); };
+  | body statements { $$ = template("%s\n%s", $1, $2); }
+  | body variable_declarations { $$ = template("%s\n%s", $1, $2); }
+  | body constant_declarations { $$ = template("%s\n%s", $1, $2); }
+  | body comp_variables { $$ = template("%s\n%s", $1, $2); };
 
 
 %%
+
+
 int main(void) {
   if ( yyparse() != 0 )
-  for (int i = 0; i < num_functions; i++) {
-    free(comp_function_output[i]);
-  }
-  free(comp_function_output);
   printf("\nRejected!\n");
 }

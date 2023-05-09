@@ -73,7 +73,7 @@ comp Order:
   enddef;
 
   def printOrder():
-
+	write("Order Num: %s\n", #orderNum);
   enddef;
 
 endcomp;
