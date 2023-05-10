@@ -270,7 +270,7 @@ comp_variables:
 
 
 constant_declarations:
-	KW_CONST identifiers AP_ASSIGN expressions DEL_COLON types DEL_SMCOLON {$$ = template("const %s = %s;", $2, $4);};
+	KW_CONST identifiers AP_ASSIGN expressions DEL_COLON types DEL_SMCOLON {$$ = template("const %s %s = %s;", $6, $2, $4);};
 
 
 
@@ -346,7 +346,7 @@ complex_type_declarations:
       //printf("\n%s\n", comp_names[i]);
     //}
 
-    $$ = template("\n#define SELF struct %s *self\ntypedef struct %s {\n%s\n} %s;\n\n%s\n\nconst ctor_%s = { %s };\n#under SELF", $2, $2, $4, $2, buffer, $2, namebuffer); 
+    $$ = template("\n#define SELF struct %s *self\ntypedef struct %s {\n%s\n} %s;\n\n%s\n\nconst %s ctor_%s = { %s };\n#undef SELF", $2, $2, $4, $2, buffer, $2, $2, namebuffer); 
 
    
     num_functions = 0;
@@ -398,7 +398,7 @@ comp_functions:
     cfnames[total_functions - 1] = malloc(MAX_STRING_LENGTH * sizeof(char*));
     
 
-    comp_function_output[num_functions - 1] = strdup(template("void %s(self%s%s) {\n%s\n} ", $2, strlen($4) != 0  ? ", " : "", $4, $7)); 
+    comp_function_output[num_functions - 1] = strdup(template("void %s(SELF%s%s) {\n%s\n} ", $2, strlen($4) != 0  ? ", " : "", $4, $7)); 
 
     comp_function_names[num_functions - 1] = strdup(template(".%s=%s", $2, $2));
 
@@ -406,7 +406,7 @@ comp_functions:
 
     //printf("\n%s\n", comp_function_names[num_functions - 1]);
     // do the normal $$
-    $$ = template("\nvoid (*%s)(self%s%s);", $2, ($4[0] != '\0') ? ", " : "", $4);
+    $$ = template("\nvoid (*%s)(SELF%s%s);", $2, ($4[0] != '\0') ? ", " : "", $4);
     } 
 
   | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON 
@@ -434,14 +434,14 @@ comp_functions:
 
     cfnames[total_functions - 1] = strdup(template("%s", $2));
 
-    comp_function_output[num_functions - 1] = strdup(template("%s %s(self%s%s) {\n%s\n} ", $7, $2, ($4[0] != '\0') ? ", " : "", $4 ,$9));
+    comp_function_output[num_functions - 1] = strdup(template("%s %s(SELF%s%s) {\n%s\n} ", $7, $2, ($4[0] != '\0') ? ", " : "", $4 ,$9));
 
     comp_function_names[num_functions - 1] = strdup(template(".%s=%s", $2, $2));
 
 
     //printf("\n%s\n", comp_function_names[num_functions - 1]);
     // do the normal $$
-    $$ = template("\n%s (*%s)(self%s%s);", $7, $2, ($4[0] != '\0') ? ", " : "", $4);
+    $$ = template("\n%s (*%s)(SELF%s%s);", $7, $2, ($4[0] != '\0') ? ", " : "", $4);
     };
 
 
@@ -542,14 +542,14 @@ command_statements:
 
 //if else statements
 if_statement:
-  KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF {$$ = template("if (%s) {\n %s\n}", $3, $6);}
+  KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF {$$ = template("if (%s) {\n%s\n}", $3, $6);}
   | KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE DEL_COLON command_statements KW_ENDIF {$$ = template("if (%s) {\n%s\n} else {\n%s\n}", $3, $6, $9);};
 
 
 //for statements
 for_statement:
   KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR  {$$ = template("for (int %s = %s; %s < %s; %s++) {\n%s\n}", $2, $5, $2, $7, $2, $10);}
-  | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR {$$ = template("for (int %s = %s; %s < %s; %s = %s %s) {\n%s\n}", $2, $5, $2, $7, $2, $2, $9, $12);};
+  | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR {$$ = template("for (int %s = %s; %s < %s; %s = %s + %s) {\n%s\n}", $2, $5, $2, $7, $2, $2, $9, $12);};
 
 
 //array statements
@@ -559,11 +559,52 @@ array_statement:
 
 
 integral_array:
-  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(%s %s = 0; %s < %s; ++%s) {\n %s[%s] = %s\n}", $11, $1, $11, $8, $11, $11, $6, $6, $8, $6, $1, $6, $4);};
+  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(%s %s = 0; %s < %s; ++%s) {\n %s[%s] = %s;\n}", $11, $1, $11, $8, $11, $11, $6, $6, $8, $6, $1, $6, $4);};
 
 
 other_array:
-  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types {$$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(int %s10_i = 0; %s10_i < %s12; ++%s10_i) {\n\t %s1[%s10_i] = %s4\n}", $15, $1, $15, $12, $15, $10, $10, $12, $10, $1, $10, $4);};
+  TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types {  
+    char* old_str = $4; // expr
+    char* new_str = NULL; // new expr
+    const char* search_str = $6; // elm in expression
+    char* replace_str = NULL; // a[a_i]
+
+    // Create a[a_i]
+    // supress a warning
+    #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+    asprintf(&replace_str, "%s[%s_i]", $10, $10);
+
+    // Find the first occurrence of elm in expr
+    char* pos = strstr(old_str, search_str);
+
+    if (pos != NULL) {
+        // Find the possition of occurance in expr
+        int index = pos - old_str;
+
+        // Allocate memory
+        new_str = (char*) malloc(strlen(old_str) - strlen(search_str) + strlen(replace_str) + 1);
+
+        // Copy the part of the old expr
+        strncpy(new_str, old_str, index);
+
+        // Append the new expr to expr
+        strcat(new_str, replace_str);
+
+        // Copy the rest of the expr
+        strcat(new_str, old_str + index + strlen(search_str));
+    } else {
+        // If search_str is not found, copy the old_str to the new_str
+        yyerror("No element %s found in expression %s", $6, $4);
+        YYERROR;
+    }
+
+    
+    $$ = template("%s* %s = (%s*)malloc(%s*sizeof(%s));\nfor(int %s_i = 0; %s_i < %s; ++%s_i) {\n\t%s[%s_i] = %s;\n}", $15, $1, $15, $12, $15, $10, $10, $12, $10, $1, $10, new_str);
+
+    // Free the memory allocated
+    free(new_str); 
+    free(replace_str);
+    free(old_str);};
 
 
 //while statements

@@ -11,7 +11,6 @@ enddef;
    
 def add(n: integer, k: integer)-> integer:
    j: integer;
-   l = 5 + 3;
    j = (N-n) + cube(k);
    writeInteger(j);
    return j;
