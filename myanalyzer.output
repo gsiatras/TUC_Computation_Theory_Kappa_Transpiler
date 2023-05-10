@@ -143,11 +143,11 @@ Grammar
   107 return_statement: KW_RETURN
   108                 | KW_RETURN expressions
 
-  109 function_statement: TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-  110 function_arg: ε
-  111             | expressions
-  112             | function_arg DEL_COMMA expressions
+  111 function_arg: expressions
+  112             | expressions DEL_COMMA function_arg
 
   113 body: statements
   114     | variable_declarations
@@ -163,7 +163,7 @@ Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    TK_IDENTIFIER <crepr> (258) 7 12 13 21 22 24 25 27 28 29 30 31 37 38 39 40 41 54 55 56 57 58 104 105 109
+    TK_IDENTIFIER <crepr> (258) 7 12 13 21 22 24 25 27 28 29 30 31 37 38 39 40 41 54 55 56 57 58 104 105 109 110
     TK_INTEGER <crepr> (259) 21 38 57 60 104 105
     TK_FLOAT <crepr> (260) 61
     TK_STRING <crepr> (261) 43
@@ -216,8 +216,8 @@ Terminals, with rules where they appear
     AP_COLONASSIGN (308) 104 105
     AP_ARROWASSIGN (309) 25 41
     DEL_SMCOLON (310) 4 20 21 22 23 24 25 31 36 40 41 82 83 84 85 86 87 88 89 90 91
-    DEL_LPAR (311) 4 24 25 40 41 52 98 99 106 109
-    DEL_RPAR (312) 4 24 25 40 41 52 98 99 106 109
+    DEL_LPAR (311) 4 24 25 40 41 52 98 99 106 109 110
+    DEL_RPAR (312) 4 24 25 40 41 52 98 99 106 109 110
     DEL_COMMA (313) 13 29 30 39 112
     DEL_LBLOCK (314) 5 21 28 29 38 56 57 58 100 101 104 105
     DEL_RBLOCK (315) 5 21 28 29 38 56 57 58 100 101 104 105
@@ -329,11 +329,11 @@ Nonterminals, with rules where they appear
         on left: 107 108
         on right: 89
     function_statement <crepr> (97)
-        on left: 109
+        on left: 109 110
         on right: 46 90
     function_arg <crepr> (98)
-        on left: 110 111 112
-        on right: 109 112
+        on left: 111 112
+        on right: 110 112
     body <crepr> (99)
         on left: 113 114 115 116 117 118 119 120
         on right: 4 24 25 40 41 117 118 119 120
@@ -646,7 +646,8 @@ State 27
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -769,7 +770,8 @@ State 38
    54 identifier_expressions: TK_IDENTIFIER •  [KW_FOR, KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, AP_ASSIGN, AP_PLUSASSIGN, AP_MINASSIGN, AP_MULASSIGN, AP_DIVASSIGN, AP_MODASSIGN, DEL_SMCOLON, DEL_RPAR, DEL_COMMA, DEL_RBLOCK, DEL_COLON, DEL_DOT]
    57                       | TK_IDENTIFIER • DEL_LBLOCK TK_INTEGER DEL_RBLOCK
    58                       | TK_IDENTIFIER • DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK
-  109 function_statement: TK_IDENTIFIER • DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: TK_IDENTIFIER • DEL_LPAR DEL_RPAR
+  110                   | TK_IDENTIFIER • DEL_LPAR function_arg DEL_RPAR
 
     DEL_LPAR    shift, and go to state 66
     DEL_LBLOCK  shift, and go to state 67
@@ -849,7 +851,8 @@ State 44
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -908,7 +911,8 @@ State 45
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -967,7 +971,8 @@ State 46
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1034,7 +1039,8 @@ State 48
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1296,11 +1302,12 @@ State 66
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
-  109                   | TK_IDENTIFIER DEL_LPAR • function_arg DEL_RPAR
-  110 function_arg: ε •  [DEL_RPAR, DEL_COMMA]
-  111             | • expressions
-  112             | • function_arg DEL_COMMA expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  109                   | TK_IDENTIFIER DEL_LPAR • DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  110                   | TK_IDENTIFIER DEL_LPAR • function_arg DEL_RPAR
+  111 function_arg: • expressions
+  112             | • expressions DEL_COMMA function_arg
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1313,16 +1320,15 @@ State 66
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
+    DEL_RPAR       shift, and go to state 100
 
-    $default  reduce using rule 110 (function_arg)
-
-    expressions             go to state 100
+    expressions             go to state 101
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
     function_statement      go to state 54
-    function_arg            go to state 101
+    function_arg            go to state 102
 
 
 State 67
@@ -1330,8 +1336,8 @@ State 67
    57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK • TK_INTEGER DEL_RBLOCK
    58                       | TK_IDENTIFIER DEL_LBLOCK • TK_IDENTIFIER DEL_RBLOCK
 
-    TK_IDENTIFIER  shift, and go to state 102
-    TK_INTEGER     shift, and go to state 103
+    TK_IDENTIFIER  shift, and go to state 103
+    TK_INTEGER     shift, and go to state 104
 
 
 State 68
@@ -1494,7 +1500,7 @@ State 71
    55 identifier_expressions: AP_HASHASSIGN TK_IDENTIFIER •  [KW_FOR, KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, AP_ASSIGN, AP_PLUSASSIGN, AP_MINASSIGN, AP_MULASSIGN, AP_DIVASSIGN, AP_MODASSIGN, DEL_SMCOLON, DEL_RPAR, DEL_COMMA, DEL_RBLOCK, DEL_COLON, DEL_DOT]
    56                       | AP_HASHASSIGN TK_IDENTIFIER • DEL_LBLOCK identifier_expressions DEL_RBLOCK
 
-    DEL_LBLOCK  shift, and go to state 104
+    DEL_LBLOCK  shift, and go to state 105
 
     $default  reduce using rule 55 (identifier_expressions)
 
@@ -1532,7 +1538,7 @@ State 72
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
-    DEL_RPAR       shift, and go to state 105
+    DEL_RPAR       shift, and go to state 106
     DEL_DOT        shift, and go to state 88
 
 
@@ -1573,7 +1579,8 @@ State 73
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1587,7 +1594,7 @@ State 73
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 106
+    expressions             go to state 107
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1632,7 +1639,8 @@ State 74
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1646,7 +1654,7 @@ State 74
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 107
+    expressions             go to state 108
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1691,7 +1699,8 @@ State 75
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1705,7 +1714,7 @@ State 75
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 108
+    expressions             go to state 109
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1750,7 +1759,8 @@ State 76
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1764,7 +1774,7 @@ State 76
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 109
+    expressions             go to state 110
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1809,7 +1819,8 @@ State 77
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1823,7 +1834,7 @@ State 77
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 110
+    expressions             go to state 111
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1868,7 +1879,8 @@ State 78
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1882,7 +1894,7 @@ State 78
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 111
+    expressions             go to state 112
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1927,7 +1939,8 @@ State 79
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -1941,7 +1954,7 @@ State 79
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 112
+    expressions             go to state 113
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -1986,7 +1999,8 @@ State 80
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2000,7 +2014,7 @@ State 80
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 113
+    expressions             go to state 114
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2045,7 +2059,8 @@ State 81
    74                       | • expressions RP_EQUALS expressions
    74                       | expressions RP_EQUALS • expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2059,7 +2074,7 @@ State 81
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 114
+    expressions             go to state 115
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2104,7 +2119,8 @@ State 82
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
    75                       | expressions RP_NOTEQUALS • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2118,7 +2134,7 @@ State 82
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 115
+    expressions             go to state 116
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2163,7 +2179,8 @@ State 83
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2177,7 +2194,7 @@ State 83
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 116
+    expressions             go to state 117
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2222,7 +2239,8 @@ State 84
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2236,7 +2254,7 @@ State 84
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 117
+    expressions             go to state 118
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2281,7 +2299,8 @@ State 85
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2295,7 +2314,7 @@ State 85
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 118
+    expressions             go to state 119
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2340,7 +2359,8 @@ State 86
    73                       | expressions RP_MOREEQUALS • expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2354,7 +2374,7 @@ State 86
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 119
+    expressions             go to state 120
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2373,15 +2393,15 @@ State 87
    11            | • KW_STR
    23 constant_declarations: KW_CONST identifiers AP_ASSIGN expressions DEL_COLON • types DEL_SMCOLON
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 122
-    basic_types  go to state 123
+    types        go to state 123
+    basic_types  go to state 124
 
 
 State 88
@@ -2421,7 +2441,8 @@ State 88
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2435,7 +2456,7 @@ State 88
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 124
+    expressions             go to state 125
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -2448,7 +2469,7 @@ State 89
    28 parameter_declarations: TK_IDENTIFIER DEL_LBLOCK • DEL_RBLOCK DEL_COLON types
    29                       | TK_IDENTIFIER DEL_LBLOCK • DEL_RBLOCK DEL_COLON types DEL_COMMA parameter_declarations
 
-    DEL_RBLOCK  shift, and go to state 125
+    DEL_RBLOCK  shift, and go to state 126
 
 
 State 90
@@ -2463,15 +2484,15 @@ State 90
    27 parameter_declarations: TK_IDENTIFIER DEL_COLON • types
    30                       | TK_IDENTIFIER DEL_COLON • types DEL_COMMA parameter_declarations
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 126
-    basic_types  go to state 123
+    types        go to state 127
+    basic_types  go to state 124
 
 
 State 91
@@ -2479,8 +2500,8 @@ State 91
    24 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR • DEL_COLON body KW_ENDDEF DEL_SMCOLON
    25          | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR • AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON
 
-    AP_ARROWASSIGN  shift, and go to state 127
-    DEL_COLON       shift, and go to state 128
+    AP_ARROWASSIGN  shift, and go to state 128
+    DEL_COLON       shift, and go to state 129
 
 
 State 92
@@ -2553,7 +2574,8 @@ State 92
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   113 body: • statements
   114     | • variable_declarations
   115     | • constant_declarations
@@ -2563,45 +2585,45 @@ State 92
   119     | • body constant_declarations
   120     | • body comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 137
-    comp_variables          go to state 138
-    constant_declarations   go to state 139
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 138
+    comp_variables          go to state 139
+    constant_declarations   go to state 140
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 144
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-    body                    go to state 153
+    assign_expressions      go to state 144
+    statements              go to state 145
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
+    body                    go to state 154
 
 
 State 93
@@ -2609,7 +2631,7 @@ State 93
    40 comp_functions: KW_DEF TK_IDENTIFIER • DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON
    41               | KW_DEF TK_IDENTIFIER • DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON
 
-    DEL_LPAR  shift, and go to state 154
+    DEL_LPAR  shift, and go to state 155
 
 
 State 94
@@ -2618,8 +2640,8 @@ State 94
    38                 | AP_HASHASSIGN TK_IDENTIFIER • DEL_LBLOCK TK_INTEGER DEL_RBLOCK
    39                 | AP_HASHASSIGN TK_IDENTIFIER • DEL_COMMA comp_identifiers
 
-    DEL_COMMA   shift, and go to state 155
-    DEL_LBLOCK  shift, and go to state 156
+    DEL_COMMA   shift, and go to state 156
+    DEL_LBLOCK  shift, and go to state 157
 
     $default  reduce using rule 37 (comp_identifiers)
 
@@ -2628,7 +2650,7 @@ State 95
 
    31 complex_type_declarations: KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 157
+    DEL_SMCOLON  shift, and go to state 158
 
 
 State 96
@@ -2649,15 +2671,15 @@ State 97
    11            | • KW_STR
    36 comp_variable_declarations: comp_identifiers DEL_COLON • types DEL_SMCOLON
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 158
-    basic_types  go to state 123
+    types        go to state 159
+    basic_types  go to state 124
 
 
 State 98
@@ -2671,10 +2693,17 @@ State 99
 
    21 variable_declarations: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON basic_types • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 159
+    DEL_SMCOLON  shift, and go to state 160
 
 
 State 100
+
+  109 function_statement: TK_IDENTIFIER DEL_LPAR DEL_RPAR •
+
+    $default  reduce using rule 109 (function_statement)
+
+
+State 101
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -2691,7 +2720,8 @@ State 100
    73                       | expressions • RP_MOREEQUALS expressions
    74                       | expressions • RP_EQUALS expressions
    75                       | expressions • RP_NOTEQUALS expressions
-  111 function_arg: expressions •  [DEL_RPAR, DEL_COMMA]
+  111 function_arg: expressions •  [DEL_RPAR]
+  112             | expressions • DEL_COMMA function_arg
 
     KW_AND         shift, and go to state 73
     KW_OR          shift, and go to state 74
@@ -2707,35 +2737,34 @@ State 100
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
+    DEL_COMMA      shift, and go to state 161
     DEL_DOT        shift, and go to state 88
 
     $default  reduce using rule 111 (function_arg)
 
 
-State 101
-
-  109 function_statement: TK_IDENTIFIER DEL_LPAR function_arg • DEL_RPAR
-  112 function_arg: function_arg • DEL_COMMA expressions
-
-    DEL_RPAR   shift, and go to state 160
-    DEL_COMMA  shift, and go to state 161
-
-
 State 102
 
-   58 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER • DEL_RBLOCK
+  110 function_statement: TK_IDENTIFIER DEL_LPAR function_arg • DEL_RPAR
 
-    DEL_RBLOCK  shift, and go to state 162
+    DEL_RPAR  shift, and go to state 162
 
 
 State 103
 
-   57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER • DEL_RBLOCK
+   58 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER • DEL_RBLOCK
 
     DEL_RBLOCK  shift, and go to state 163
 
 
 State 104
+
+   57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER • DEL_RBLOCK
+
+    DEL_RBLOCK  shift, and go to state 164
+
+
+State 105
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -2772,7 +2801,8 @@ State 104
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -2786,22 +2816,22 @@ State 104
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 140
+    expressions             go to state 141
     comp_expressions        go to state 50
-    identifier_expressions  go to state 164
+    identifier_expressions  go to state 165
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
     function_statement      go to state 54
 
 
-State 105
+State 106
 
    52 expressions: DEL_LPAR expressions DEL_RPAR •
 
     $default  reduce using rule 52 (expressions)
 
 
-State 106
+State 107
 
    50 expressions: expressions • KW_AND expressions
    50            | expressions KW_AND expressions •  [KW_FOR, KW_AND, AP_ASSIGN, AP_PLUSASSIGN, AP_MINASSIGN, AP_MULASSIGN, AP_DIVASSIGN, AP_MODASSIGN, DEL_SMCOLON, DEL_RPAR, DEL_COMMA, DEL_RBLOCK, DEL_COLON]
@@ -2854,7 +2884,7 @@ State 106
     Conflict between rule 50 and token DEL_DOT resolved as shift (KW_AND < DEL_DOT).
 
 
-State 107
+State 108
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -2906,7 +2936,7 @@ State 107
     Conflict between rule 51 and token DEL_DOT resolved as shift (KW_OR < DEL_DOT).
 
 
-State 108
+State 109
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -2957,7 +2987,7 @@ State 108
     Conflict between rule 66 and token DEL_DOT resolved as shift (OP_PLUS < DEL_DOT).
 
 
-State 109
+State 110
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3007,7 +3037,7 @@ State 109
     Conflict between rule 67 and token DEL_DOT resolved as shift (OP_MINUS < DEL_DOT).
 
 
-State 110
+State 111
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3056,7 +3086,7 @@ State 110
     Conflict between rule 63 and token DEL_DOT resolved as shift (OP_MULT < DEL_DOT).
 
 
-State 111
+State 112
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3104,7 +3134,7 @@ State 111
     Conflict between rule 64 and token DEL_DOT resolved as shift (OP_DIV < DEL_DOT).
 
 
-State 112
+State 113
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3151,7 +3181,7 @@ State 112
     Conflict between rule 65 and token DEL_DOT resolved as shift (OP_MOD < DEL_DOT).
 
 
-State 113
+State 114
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3198,7 +3228,7 @@ State 113
     Conflict between rule 62 and token DEL_DOT resolved as shift (OP_POWER < DEL_DOT).
 
 
-State 114
+State 115
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3243,7 +3273,7 @@ State 114
     Conflict between rule 74 and token DEL_DOT resolved as shift (RP_EQUALS < DEL_DOT).
 
 
-State 115
+State 116
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3287,7 +3317,7 @@ State 115
     Conflict between rule 75 and token DEL_DOT resolved as shift (RP_NOTEQUALS < DEL_DOT).
 
 
-State 116
+State 117
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3330,7 +3360,7 @@ State 116
     Conflict between rule 70 and token DEL_DOT resolved as shift (RP_LESS < DEL_DOT).
 
 
-State 117
+State 118
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3372,7 +3402,7 @@ State 117
     Conflict between rule 71 and token DEL_DOT resolved as shift (RP_LESSEQUALS < DEL_DOT).
 
 
-State 118
+State 119
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3413,7 +3443,7 @@ State 118
     Conflict between rule 72 and token DEL_DOT resolved as shift (RP_MORE < DEL_DOT).
 
 
-State 119
+State 120
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3453,35 +3483,35 @@ State 119
     Conflict between rule 73 and token DEL_DOT resolved as shift (RP_MOREEQUALS < DEL_DOT).
 
 
-State 120
+State 121
 
     7 types: TK_IDENTIFIER •
 
     $default  reduce using rule 7 (types)
 
 
-State 121
+State 122
 
     5 types: DEL_LBLOCK • DEL_RBLOCK basic_types
 
-    DEL_RBLOCK  shift, and go to state 165
-
-
-State 122
-
-   23 constant_declarations: KW_CONST identifiers AP_ASSIGN expressions DEL_COLON types • DEL_SMCOLON
-
-    DEL_SMCOLON  shift, and go to state 166
+    DEL_RBLOCK  shift, and go to state 166
 
 
 State 123
+
+   23 constant_declarations: KW_CONST identifiers AP_ASSIGN expressions DEL_COLON types • DEL_SMCOLON
+
+    DEL_SMCOLON  shift, and go to state 167
+
+
+State 124
 
     6 types: basic_types •
 
     $default  reduce using rule 6 (types)
 
 
-State 124
+State 125
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3519,25 +3549,25 @@ State 124
     Conflict between rule 53 and token DEL_DOT resolved as reduce (%left DEL_DOT).
 
 
-State 125
+State 126
 
    28 parameter_declarations: TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK • DEL_COLON types
    29                       | TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK • DEL_COLON types DEL_COMMA parameter_declarations
 
-    DEL_COLON  shift, and go to state 167
+    DEL_COLON  shift, and go to state 168
 
 
-State 126
+State 127
 
    27 parameter_declarations: TK_IDENTIFIER DEL_COLON types •  [DEL_RPAR]
    30                       | TK_IDENTIFIER DEL_COLON types • DEL_COMMA parameter_declarations
 
-    DEL_COMMA  shift, and go to state 168
+    DEL_COMMA  shift, and go to state 169
 
     $default  reduce using rule 27 (parameter_declarations)
 
 
-State 127
+State 128
 
     5 types: • DEL_LBLOCK DEL_RBLOCK basic_types
     6      | • basic_types
@@ -3548,18 +3578,18 @@ State 127
    11            | • KW_STR
    25 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN • types DEL_COLON body KW_ENDDEF DEL_SMCOLON
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 169
-    basic_types  go to state 123
+    types        go to state 170
+    basic_types  go to state 124
 
 
-State 128
+State 129
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -3629,7 +3659,8 @@ State 128
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   113 body: • statements
   114     | • variable_declarations
   115     | • constant_declarations
@@ -3639,48 +3670,48 @@ State 128
   119     | • body constant_declarations
   120     | • body comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 137
-    comp_variables          go to state 138
-    constant_declarations   go to state 139
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 138
+    comp_variables          go to state 139
+    constant_declarations   go to state 140
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 144
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-    body                    go to state 170
+    assign_expressions      go to state 144
+    statements              go to state 145
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
+    body                    go to state 171
 
 
-State 129
+State 130
 
    12 identifiers: TK_IDENTIFIER •  [DEL_COMMA, DEL_COLON]
    21 variable_declarations: TK_IDENTIFIER • DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON basic_types DEL_SMCOLON
@@ -3689,26 +3720,27 @@ State 129
    58                       | TK_IDENTIFIER • DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK
   104 integral_array: TK_IDENTIFIER • AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER • AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
-  109 function_statement: TK_IDENTIFIER • DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: TK_IDENTIFIER • DEL_LPAR DEL_RPAR
+  110                   | TK_IDENTIFIER • DEL_LPAR function_arg DEL_RPAR
 
-    AP_COLONASSIGN  shift, and go to state 171
+    AP_COLONASSIGN  shift, and go to state 172
     DEL_LPAR        shift, and go to state 66
-    DEL_LBLOCK      shift, and go to state 172
+    DEL_LBLOCK      shift, and go to state 173
 
     DEL_COMMA  reduce using rule 12 (identifiers)
     DEL_COLON  reduce using rule 12 (identifiers)
     $default   reduce using rule 54 (identifier_expressions)
 
 
-State 130
+State 131
 
    98 if_statement: KW_IF • DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF
    99             | KW_IF • DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE DEL_COLON command_statements KW_ENDIF
 
-    DEL_LPAR  shift, and go to state 173
+    DEL_LPAR  shift, and go to state 174
 
 
-State 131
+State 132
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -3717,31 +3749,31 @@ State 131
 
     TK_IDENTIFIER  shift, and go to state 16
 
-    identifiers  go to state 174
-
-
-State 132
-
-  106 while_statement: KW_WHILE • DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
-
-    DEL_LPAR  shift, and go to state 175
+    identifiers  go to state 175
 
 
 State 133
 
-   86 statements: KW_BREAK • DEL_SMCOLON
+  106 while_statement: KW_WHILE • DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
 
-    DEL_SMCOLON  shift, and go to state 176
+    DEL_LPAR  shift, and go to state 176
 
 
 State 134
 
-   87 statements: KW_CONTINUE • DEL_SMCOLON
+   86 statements: KW_BREAK • DEL_SMCOLON
 
     DEL_SMCOLON  shift, and go to state 177
 
 
 State 135
+
+   87 statements: KW_CONTINUE • DEL_SMCOLON
+
+    DEL_SMCOLON  shift, and go to state 178
+
+
+State 136
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -3779,7 +3811,8 @@ State 135
    75                       | • expressions RP_NOTEQUALS expressions
   107 return_statement: KW_RETURN •  [DEL_SMCOLON]
   108                 | KW_RETURN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -3795,7 +3828,7 @@ State 135
 
     $default  reduce using rule 107 (return_statement)
 
-    expressions             go to state 178
+    expressions             go to state 179
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -3803,38 +3836,38 @@ State 135
     function_statement      go to state 54
 
 
-State 136
+State 137
 
    13 identifiers: identifiers • DEL_COMMA TK_IDENTIFIER
    20 variable_declarations: identifiers • DEL_COLON basic_types DEL_SMCOLON
    22 comp_variables: identifiers • DEL_COLON TK_IDENTIFIER DEL_SMCOLON
 
     DEL_COMMA  shift, and go to state 22
-    DEL_COLON  shift, and go to state 179
+    DEL_COLON  shift, and go to state 180
 
 
-State 137
+State 138
 
   114 body: variable_declarations •
 
     $default  reduce using rule 114 (body)
 
 
-State 138
+State 139
 
   116 body: comp_variables •
 
     $default  reduce using rule 116 (body)
 
 
-State 139
+State 140
 
   115 body: constant_declarations •
 
     $default  reduce using rule 115 (body)
 
 
-State 140
+State 141
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -3869,17 +3902,17 @@ State 140
     DEL_DOT        shift, and go to state 88
 
 
-State 141
+State 142
 
    59 identifier_expressions: comp_expressions •  [KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, AP_ASSIGN, AP_PLUSASSIGN, AP_MINASSIGN, AP_MULASSIGN, AP_DIVASSIGN, AP_MODASSIGN, DEL_DOT]
    91 statements: comp_expressions • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 180
+    DEL_SMCOLON  shift, and go to state 181
 
     $default  reduce using rule 59 (identifier_expressions)
 
 
-State 142
+State 143
 
    42 expressions: identifier_expressions •  [KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, DEL_DOT]
    76 assign_expressions: identifier_expressions • AP_ASSIGN expressions
@@ -3889,90 +3922,90 @@ State 142
    80                   | identifier_expressions • AP_DIVASSIGN expressions
    81                   | identifier_expressions • AP_MODASSIGN expressions
 
-    AP_ASSIGN      shift, and go to state 181
-    AP_PLUSASSIGN  shift, and go to state 182
-    AP_MINASSIGN   shift, and go to state 183
-    AP_MULASSIGN   shift, and go to state 184
-    AP_DIVASSIGN   shift, and go to state 185
-    AP_MODASSIGN   shift, and go to state 186
+    AP_ASSIGN      shift, and go to state 182
+    AP_PLUSASSIGN  shift, and go to state 183
+    AP_MINASSIGN   shift, and go to state 184
+    AP_MULASSIGN   shift, and go to state 185
+    AP_DIVASSIGN   shift, and go to state 186
+    AP_MODASSIGN   shift, and go to state 187
 
     $default  reduce using rule 42 (expressions)
 
 
-State 143
+State 144
 
    88 statements: assign_expressions • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 187
+    DEL_SMCOLON  shift, and go to state 188
 
 
-State 144
+State 145
 
   113 body: statements •
 
     $default  reduce using rule 113 (body)
 
 
-State 145
-
-   82 statements: if_statement • DEL_SMCOLON
-
-    DEL_SMCOLON  shift, and go to state 188
-
-
 State 146
 
-   83 statements: for_statement • DEL_SMCOLON
+   82 statements: if_statement • DEL_SMCOLON
 
     DEL_SMCOLON  shift, and go to state 189
 
 
 State 147
 
-   84 statements: array_statement • DEL_SMCOLON
+   83 statements: for_statement • DEL_SMCOLON
 
     DEL_SMCOLON  shift, and go to state 190
 
 
 State 148
 
+   84 statements: array_statement • DEL_SMCOLON
+
+    DEL_SMCOLON  shift, and go to state 191
+
+
+State 149
+
   102 array_statement: integral_array •
 
     $default  reduce using rule 102 (array_statement)
 
 
-State 149
+State 150
 
   103 array_statement: other_array •
 
     $default  reduce using rule 103 (array_statement)
 
 
-State 150
-
-   85 statements: while_statement • DEL_SMCOLON
-
-    DEL_SMCOLON  shift, and go to state 191
-
-
 State 151
 
-   89 statements: return_statement • DEL_SMCOLON
+   85 statements: while_statement • DEL_SMCOLON
 
     DEL_SMCOLON  shift, and go to state 192
 
 
 State 152
 
+   89 statements: return_statement • DEL_SMCOLON
+
+    DEL_SMCOLON  shift, and go to state 193
+
+
+State 153
+
    46 expressions: function_statement •  [KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, DEL_DOT]
    90 statements: function_statement • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 193
+    DEL_SMCOLON  shift, and go to state 194
 
     $default  reduce using rule 46 (expressions)
 
 
-State 153
+State 154
 
     4 main: KW_DEF KW_MAIN DEL_LPAR DEL_RPAR DEL_COLON body • KW_ENDDEF DEL_SMCOLON
    12 identifiers: • TK_IDENTIFIER
@@ -4042,54 +4075,55 @@ State 153
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   117 body: body • statements
   118     | body • variable_declarations
   119     | body • constant_declarations
   120     | body • comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_ENDDEF      shift, and go to state 194
-    KW_RETURN      shift, and go to state 135
+    KW_ENDDEF      shift, and go to state 195
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 195
-    comp_variables          go to state 196
-    constant_declarations   go to state 197
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 196
+    comp_variables          go to state 197
+    constant_declarations   go to state 198
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 198
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 199
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 154
+State 155
 
    26 parameter_declarations: ε •  [DEL_RPAR]
    27                       | • TK_IDENTIFIER DEL_COLON types
@@ -4103,10 +4137,10 @@ State 154
 
     $default  reduce using rule 26 (parameter_declarations)
 
-    parameter_declarations  go to state 199
+    parameter_declarations  go to state 200
 
 
-State 155
+State 156
 
    37 comp_identifiers: • AP_HASHASSIGN TK_IDENTIFIER
    38                 | • AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK
@@ -4115,42 +4149,35 @@ State 155
 
     AP_HASHASSIGN  shift, and go to state 59
 
-    comp_identifiers  go to state 200
-
-
-State 156
-
-   38 comp_identifiers: AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK • TK_INTEGER DEL_RBLOCK
-
-    TK_INTEGER  shift, and go to state 201
+    comp_identifiers  go to state 201
 
 
 State 157
+
+   38 comp_identifiers: AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK • TK_INTEGER DEL_RBLOCK
+
+    TK_INTEGER  shift, and go to state 202
+
+
+State 158
 
    31 complex_type_declarations: KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP DEL_SMCOLON •
 
     $default  reduce using rule 31 (complex_type_declarations)
 
 
-State 158
+State 159
 
    36 comp_variable_declarations: comp_identifiers DEL_COLON types • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 202
-
-
-State 159
-
-   21 variable_declarations: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON basic_types DEL_SMCOLON •
-
-    $default  reduce using rule 21 (variable_declarations)
+    DEL_SMCOLON  shift, and go to state 203
 
 
 State 160
 
-  109 function_statement: TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR •
+   21 variable_declarations: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK DEL_COLON basic_types DEL_SMCOLON •
 
-    $default  reduce using rule 109 (function_statement)
+    $default  reduce using rule 21 (variable_declarations)
 
 
 State 161
@@ -4189,8 +4216,11 @@ State 161
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
-  112 function_arg: function_arg DEL_COMMA • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  111 function_arg: • expressions
+  112             | • expressions DEL_COMMA function_arg
+  112             | expressions DEL_COMMA • function_arg
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4204,39 +4234,47 @@ State 161
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 203
+    expressions             go to state 101
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
     function_statement      go to state 54
+    function_arg            go to state 204
 
 
 State 162
+
+  110 function_statement: TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR •
+
+    $default  reduce using rule 110 (function_statement)
+
+
+State 163
 
    58 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK •
 
     $default  reduce using rule 58 (identifier_expressions)
 
 
-State 163
+State 164
 
    57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK •
 
     $default  reduce using rule 57 (identifier_expressions)
 
 
-State 164
+State 165
 
    42 expressions: identifier_expressions •  [KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, DEL_DOT]
    56 identifier_expressions: AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK identifier_expressions • DEL_RBLOCK
 
-    DEL_RBLOCK  shift, and go to state 204
+    DEL_RBLOCK  shift, and go to state 205
 
     $default  reduce using rule 42 (expressions)
 
 
-State 165
+State 166
 
     5 types: DEL_LBLOCK DEL_RBLOCK • basic_types
     8 basic_types: • KW_INT
@@ -4249,17 +4287,17 @@ State 165
     KW_STR      shift, and go to state 34
     KW_BOOLEAN  shift, and go to state 35
 
-    basic_types  go to state 205
+    basic_types  go to state 206
 
 
-State 166
+State 167
 
    23 constant_declarations: KW_CONST identifiers AP_ASSIGN expressions DEL_COLON types DEL_SMCOLON •
 
     $default  reduce using rule 23 (constant_declarations)
 
 
-State 167
+State 168
 
     5 types: • DEL_LBLOCK DEL_RBLOCK basic_types
     6      | • basic_types
@@ -4271,18 +4309,18 @@ State 167
    28 parameter_declarations: TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON • types
    29                       | TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON • types DEL_COMMA parameter_declarations
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 206
-    basic_types  go to state 123
+    types        go to state 207
+    basic_types  go to state 124
 
 
-State 168
+State 169
 
    26 parameter_declarations: ε •  [DEL_RPAR]
    27                       | • TK_IDENTIFIER DEL_COLON types
@@ -4295,17 +4333,17 @@ State 168
 
     $default  reduce using rule 26 (parameter_declarations)
 
-    parameter_declarations  go to state 207
-
-
-State 169
-
-   25 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types • DEL_COLON body KW_ENDDEF DEL_SMCOLON
-
-    DEL_COLON  shift, and go to state 208
+    parameter_declarations  go to state 208
 
 
 State 170
+
+   25 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types • DEL_COLON body KW_ENDDEF DEL_SMCOLON
+
+    DEL_COLON  shift, and go to state 209
+
+
+State 171
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -4375,72 +4413,73 @@ State 170
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   117 body: body • statements
   118     | body • variable_declarations
   119     | body • constant_declarations
   120     | body • comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_ENDDEF      shift, and go to state 209
-    KW_RETURN      shift, and go to state 135
+    KW_ENDDEF      shift, and go to state 210
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 195
-    comp_variables          go to state 196
-    constant_declarations   go to state 197
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 196
+    comp_variables          go to state 197
+    constant_declarations   go to state 198
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 198
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 199
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 171
+State 172
 
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN • DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN • DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
 
-    DEL_LBLOCK  shift, and go to state 210
+    DEL_LBLOCK  shift, and go to state 211
 
 
-State 172
+State 173
 
    21 variable_declarations: TK_IDENTIFIER DEL_LBLOCK • TK_INTEGER DEL_RBLOCK DEL_COLON basic_types DEL_SMCOLON
    57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK • TK_INTEGER DEL_RBLOCK
    58                       | TK_IDENTIFIER DEL_LBLOCK • TK_IDENTIFIER DEL_RBLOCK
 
-    TK_IDENTIFIER  shift, and go to state 102
-    TK_INTEGER     shift, and go to state 211
+    TK_IDENTIFIER  shift, and go to state 103
+    TK_INTEGER     shift, and go to state 212
 
 
-State 173
+State 174
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -4478,7 +4517,8 @@ State 173
    75                       | • expressions RP_NOTEQUALS expressions
    98 if_statement: KW_IF DEL_LPAR • expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF
    99             | KW_IF DEL_LPAR • expressions DEL_RPAR DEL_COLON command_statements KW_ELSE DEL_COLON command_statements KW_ENDIF
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4492,7 +4532,7 @@ State 173
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 212
+    expressions             go to state 213
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -4500,17 +4540,17 @@ State 173
     function_statement      go to state 54
 
 
-State 174
+State 175
 
    13 identifiers: identifiers • DEL_COMMA TK_IDENTIFIER
   100 for_statement: KW_FOR identifiers • KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
   101              | KW_FOR identifiers • KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
 
-    KW_IN      shift, and go to state 213
+    KW_IN      shift, and go to state 214
     DEL_COMMA  shift, and go to state 22
 
 
-State 175
+State 176
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -4547,7 +4587,8 @@ State 175
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
   106 while_statement: KW_WHILE DEL_LPAR • expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4561,7 +4602,7 @@ State 175
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 214
+    expressions             go to state 215
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -4569,21 +4610,21 @@ State 175
     function_statement      go to state 54
 
 
-State 176
+State 177
 
    86 statements: KW_BREAK DEL_SMCOLON •
 
     $default  reduce using rule 86 (statements)
 
 
-State 177
+State 178
 
    87 statements: KW_CONTINUE DEL_SMCOLON •
 
     $default  reduce using rule 87 (statements)
 
 
-State 178
+State 179
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -4621,7 +4662,7 @@ State 178
     $default  reduce using rule 108 (return_statement)
 
 
-State 179
+State 180
 
     8 basic_types: • KW_INT
     9            | • KW_BOOLEAN
@@ -4630,7 +4671,7 @@ State 179
    20 variable_declarations: identifiers DEL_COLON • basic_types DEL_SMCOLON
    22 comp_variables: identifiers DEL_COLON • TK_IDENTIFIER DEL_SMCOLON
 
-    TK_IDENTIFIER  shift, and go to state 215
+    TK_IDENTIFIER  shift, and go to state 216
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
@@ -4639,70 +4680,11 @@ State 179
     basic_types  go to state 36
 
 
-State 180
+State 181
 
    91 statements: comp_expressions DEL_SMCOLON •
 
     $default  reduce using rule 91 (statements)
-
-
-State 181
-
-   42 expressions: • identifier_expressions
-   43            | • TK_STRING
-   44            | • KW_TRUE
-   45            | • KW_FALSE
-   46            | • function_statement
-   47            | • arithmetic_expressions
-   48            | • relational_expressions
-   49            | • KW_NOT expressions
-   50            | • expressions KW_AND expressions
-   51            | • expressions KW_OR expressions
-   52            | • DEL_LPAR expressions DEL_RPAR
-   53 comp_expressions: • expressions DEL_DOT expressions
-   54 identifier_expressions: • TK_IDENTIFIER
-   55                       | • AP_HASHASSIGN TK_IDENTIFIER
-   56                       | • AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK identifier_expressions DEL_RBLOCK
-   57                       | • TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK
-   58                       | • TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK
-   59                       | • comp_expressions
-   60 arithmetic_expressions: • TK_INTEGER
-   61                       | • TK_FLOAT
-   62                       | • expressions OP_POWER expressions
-   63                       | • expressions OP_MULT expressions
-   64                       | • expressions OP_DIV expressions
-   65                       | • expressions OP_MOD expressions
-   66                       | • expressions OP_PLUS expressions
-   67                       | • expressions OP_MINUS expressions
-   68                       | • OP_PLUS expressions
-   69                       | • OP_MINUS expressions
-   70 relational_expressions: • expressions RP_LESS expressions
-   71                       | • expressions RP_LESSEQUALS expressions
-   72                       | • expressions RP_MORE expressions
-   73                       | • expressions RP_MOREEQUALS expressions
-   74                       | • expressions RP_EQUALS expressions
-   75                       | • expressions RP_NOTEQUALS expressions
-   76 assign_expressions: identifier_expressions AP_ASSIGN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
-
-    TK_IDENTIFIER  shift, and go to state 38
-    TK_INTEGER     shift, and go to state 39
-    TK_FLOAT       shift, and go to state 40
-    TK_STRING      shift, and go to state 41
-    KW_TRUE        shift, and go to state 42
-    KW_FALSE       shift, and go to state 43
-    KW_NOT         shift, and go to state 44
-    OP_PLUS        shift, and go to state 45
-    OP_MINUS       shift, and go to state 46
-    AP_HASHASSIGN  shift, and go to state 47
-    DEL_LPAR       shift, and go to state 48
-
-    expressions             go to state 216
-    comp_expressions        go to state 50
-    identifier_expressions  go to state 51
-    arithmetic_expressions  go to state 52
-    relational_expressions  go to state 53
-    function_statement      go to state 54
 
 
 State 182
@@ -4741,8 +4723,9 @@ State 182
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-   77 assign_expressions: identifier_expressions AP_PLUSASSIGN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+   76 assign_expressions: identifier_expressions AP_ASSIGN • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4800,8 +4783,9 @@ State 183
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-   78 assign_expressions: identifier_expressions AP_MINASSIGN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+   77 assign_expressions: identifier_expressions AP_PLUSASSIGN • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4859,8 +4843,9 @@ State 184
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-   79 assign_expressions: identifier_expressions AP_MULASSIGN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+   78 assign_expressions: identifier_expressions AP_MINASSIGN • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4918,8 +4903,9 @@ State 185
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-   80 assign_expressions: identifier_expressions AP_DIVASSIGN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+   79 assign_expressions: identifier_expressions AP_MULASSIGN • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -4977,8 +4963,9 @@ State 186
    73                       | • expressions RP_MOREEQUALS expressions
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
-   81 assign_expressions: identifier_expressions AP_MODASSIGN • expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+   80 assign_expressions: identifier_expressions AP_DIVASSIGN • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -5002,187 +4989,216 @@ State 186
 
 State 187
 
+   42 expressions: • identifier_expressions
+   43            | • TK_STRING
+   44            | • KW_TRUE
+   45            | • KW_FALSE
+   46            | • function_statement
+   47            | • arithmetic_expressions
+   48            | • relational_expressions
+   49            | • KW_NOT expressions
+   50            | • expressions KW_AND expressions
+   51            | • expressions KW_OR expressions
+   52            | • DEL_LPAR expressions DEL_RPAR
+   53 comp_expressions: • expressions DEL_DOT expressions
+   54 identifier_expressions: • TK_IDENTIFIER
+   55                       | • AP_HASHASSIGN TK_IDENTIFIER
+   56                       | • AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK identifier_expressions DEL_RBLOCK
+   57                       | • TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK
+   58                       | • TK_IDENTIFIER DEL_LBLOCK TK_IDENTIFIER DEL_RBLOCK
+   59                       | • comp_expressions
+   60 arithmetic_expressions: • TK_INTEGER
+   61                       | • TK_FLOAT
+   62                       | • expressions OP_POWER expressions
+   63                       | • expressions OP_MULT expressions
+   64                       | • expressions OP_DIV expressions
+   65                       | • expressions OP_MOD expressions
+   66                       | • expressions OP_PLUS expressions
+   67                       | • expressions OP_MINUS expressions
+   68                       | • OP_PLUS expressions
+   69                       | • OP_MINUS expressions
+   70 relational_expressions: • expressions RP_LESS expressions
+   71                       | • expressions RP_LESSEQUALS expressions
+   72                       | • expressions RP_MORE expressions
+   73                       | • expressions RP_MOREEQUALS expressions
+   74                       | • expressions RP_EQUALS expressions
+   75                       | • expressions RP_NOTEQUALS expressions
+   81 assign_expressions: identifier_expressions AP_MODASSIGN • expressions
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+
+    TK_IDENTIFIER  shift, and go to state 38
+    TK_INTEGER     shift, and go to state 39
+    TK_FLOAT       shift, and go to state 40
+    TK_STRING      shift, and go to state 41
+    KW_TRUE        shift, and go to state 42
+    KW_FALSE       shift, and go to state 43
+    KW_NOT         shift, and go to state 44
+    OP_PLUS        shift, and go to state 45
+    OP_MINUS       shift, and go to state 46
+    AP_HASHASSIGN  shift, and go to state 47
+    DEL_LPAR       shift, and go to state 48
+
+    expressions             go to state 222
+    comp_expressions        go to state 50
+    identifier_expressions  go to state 51
+    arithmetic_expressions  go to state 52
+    relational_expressions  go to state 53
+    function_statement      go to state 54
+
+
+State 188
+
    88 statements: assign_expressions DEL_SMCOLON •
 
     $default  reduce using rule 88 (statements)
 
 
-State 188
+State 189
 
    82 statements: if_statement DEL_SMCOLON •
 
     $default  reduce using rule 82 (statements)
 
 
-State 189
+State 190
 
    83 statements: for_statement DEL_SMCOLON •
 
     $default  reduce using rule 83 (statements)
 
 
-State 190
+State 191
 
    84 statements: array_statement DEL_SMCOLON •
 
     $default  reduce using rule 84 (statements)
 
 
-State 191
+State 192
 
    85 statements: while_statement DEL_SMCOLON •
 
     $default  reduce using rule 85 (statements)
 
 
-State 192
+State 193
 
    89 statements: return_statement DEL_SMCOLON •
 
     $default  reduce using rule 89 (statements)
 
 
-State 193
+State 194
 
    90 statements: function_statement DEL_SMCOLON •
 
     $default  reduce using rule 90 (statements)
 
 
-State 194
+State 195
 
     4 main: KW_DEF KW_MAIN DEL_LPAR DEL_RPAR DEL_COLON body KW_ENDDEF • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 222
+    DEL_SMCOLON  shift, and go to state 223
 
 
-State 195
+State 196
 
   118 body: body variable_declarations •
 
     $default  reduce using rule 118 (body)
 
 
-State 196
+State 197
 
   120 body: body comp_variables •
 
     $default  reduce using rule 120 (body)
 
 
-State 197
+State 198
 
   119 body: body constant_declarations •
 
     $default  reduce using rule 119 (body)
 
 
-State 198
+State 199
 
   117 body: body statements •
 
     $default  reduce using rule 117 (body)
 
 
-State 199
+State 200
 
    40 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations • DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON
    41               | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations • DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON
 
-    DEL_RPAR  shift, and go to state 223
+    DEL_RPAR  shift, and go to state 224
 
 
-State 200
+State 201
 
    39 comp_identifiers: AP_HASHASSIGN TK_IDENTIFIER DEL_COMMA comp_identifiers •
 
     $default  reduce using rule 39 (comp_identifiers)
 
 
-State 201
+State 202
 
    38 comp_identifiers: AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK TK_INTEGER • DEL_RBLOCK
 
-    DEL_RBLOCK  shift, and go to state 224
+    DEL_RBLOCK  shift, and go to state 225
 
 
-State 202
+State 203
 
    36 comp_variable_declarations: comp_identifiers DEL_COLON types DEL_SMCOLON •
 
     $default  reduce using rule 36 (comp_variable_declarations)
 
 
-State 203
+State 204
 
-   50 expressions: expressions • KW_AND expressions
-   51            | expressions • KW_OR expressions
-   53 comp_expressions: expressions • DEL_DOT expressions
-   62 arithmetic_expressions: expressions • OP_POWER expressions
-   63                       | expressions • OP_MULT expressions
-   64                       | expressions • OP_DIV expressions
-   65                       | expressions • OP_MOD expressions
-   66                       | expressions • OP_PLUS expressions
-   67                       | expressions • OP_MINUS expressions
-   70 relational_expressions: expressions • RP_LESS expressions
-   71                       | expressions • RP_LESSEQUALS expressions
-   72                       | expressions • RP_MORE expressions
-   73                       | expressions • RP_MOREEQUALS expressions
-   74                       | expressions • RP_EQUALS expressions
-   75                       | expressions • RP_NOTEQUALS expressions
-  112 function_arg: function_arg DEL_COMMA expressions •  [DEL_RPAR, DEL_COMMA]
-
-    KW_AND         shift, and go to state 73
-    KW_OR          shift, and go to state 74
-    OP_PLUS        shift, and go to state 75
-    OP_MINUS       shift, and go to state 76
-    OP_MULT        shift, and go to state 77
-    OP_DIV         shift, and go to state 78
-    OP_MOD         shift, and go to state 79
-    OP_POWER       shift, and go to state 80
-    RP_EQUALS      shift, and go to state 81
-    RP_NOTEQUALS   shift, and go to state 82
-    RP_LESS        shift, and go to state 83
-    RP_LESSEQUALS  shift, and go to state 84
-    RP_MORE        shift, and go to state 85
-    RP_MOREEQUALS  shift, and go to state 86
-    DEL_DOT        shift, and go to state 88
+  112 function_arg: expressions DEL_COMMA function_arg •
 
     $default  reduce using rule 112 (function_arg)
 
 
-State 204
+State 205
 
    56 identifier_expressions: AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK identifier_expressions DEL_RBLOCK •
 
     $default  reduce using rule 56 (identifier_expressions)
 
 
-State 205
+State 206
 
     5 types: DEL_LBLOCK DEL_RBLOCK basic_types •
 
     $default  reduce using rule 5 (types)
 
 
-State 206
+State 207
 
    28 parameter_declarations: TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON types •  [DEL_RPAR]
    29                       | TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON types • DEL_COMMA parameter_declarations
 
-    DEL_COMMA  shift, and go to state 225
+    DEL_COMMA  shift, and go to state 226
 
     $default  reduce using rule 28 (parameter_declarations)
 
 
-State 207
+State 208
 
    30 parameter_declarations: TK_IDENTIFIER DEL_COLON types DEL_COMMA parameter_declarations •
 
     $default  reduce using rule 30 (parameter_declarations)
 
 
-State 208
+State 209
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -5252,7 +5268,8 @@ State 208
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   113 body: • statements
   114     | • variable_declarations
   115     | • constant_declarations
@@ -5262,55 +5279,55 @@ State 208
   119     | • body constant_declarations
   120     | • body comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 137
-    comp_variables          go to state 138
-    constant_declarations   go to state 139
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 138
+    comp_variables          go to state 139
+    constant_declarations   go to state 140
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 144
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-    body                    go to state 226
-
-
-State 209
-
-   24 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF • DEL_SMCOLON
-
-    DEL_SMCOLON  shift, and go to state 227
+    assign_expressions      go to state 144
+    statements              go to state 145
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
+    body                    go to state 227
 
 
 State 210
+
+   24 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF • DEL_SMCOLON
+
+    DEL_SMCOLON  shift, and go to state 228
+
+
+State 211
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -5348,7 +5365,8 @@ State 210
    75                       | • expressions RP_NOTEQUALS expressions
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK • expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK • expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -5362,7 +5380,7 @@ State 210
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 228
+    expressions             go to state 229
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -5370,15 +5388,15 @@ State 210
     function_statement      go to state 54
 
 
-State 211
+State 212
 
    21 variable_declarations: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER • DEL_RBLOCK DEL_COLON basic_types DEL_SMCOLON
    57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER • DEL_RBLOCK
 
-    DEL_RBLOCK  shift, and go to state 229
+    DEL_RBLOCK  shift, and go to state 230
 
 
-State 212
+State 213
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5412,19 +5430,19 @@ State 212
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
-    DEL_RPAR       shift, and go to state 230
+    DEL_RPAR       shift, and go to state 231
     DEL_DOT        shift, and go to state 88
 
 
-State 213
+State 214
 
   100 for_statement: KW_FOR identifiers KW_IN • DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
   101              | KW_FOR identifiers KW_IN • DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
 
-    DEL_LBLOCK  shift, and go to state 231
+    DEL_LBLOCK  shift, and go to state 232
 
 
-State 214
+State 215
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5457,18 +5475,18 @@ State 214
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
-    DEL_RPAR       shift, and go to state 232
+    DEL_RPAR       shift, and go to state 233
     DEL_DOT        shift, and go to state 88
 
 
-State 215
+State 216
 
    22 comp_variables: identifiers DEL_COLON TK_IDENTIFIER • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 233
+    DEL_SMCOLON  shift, and go to state 234
 
 
-State 216
+State 217
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5506,7 +5524,7 @@ State 216
     $default  reduce using rule 76 (assign_expressions)
 
 
-State 217
+State 218
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5544,7 +5562,7 @@ State 217
     $default  reduce using rule 77 (assign_expressions)
 
 
-State 218
+State 219
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5582,7 +5600,7 @@ State 218
     $default  reduce using rule 78 (assign_expressions)
 
 
-State 219
+State 220
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5620,7 +5638,7 @@ State 219
     $default  reduce using rule 79 (assign_expressions)
 
 
-State 220
+State 221
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5658,7 +5676,7 @@ State 220
     $default  reduce using rule 80 (assign_expressions)
 
 
-State 221
+State 222
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5696,30 +5714,30 @@ State 221
     $default  reduce using rule 81 (assign_expressions)
 
 
-State 222
+State 223
 
     4 main: KW_DEF KW_MAIN DEL_LPAR DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON •
 
     $default  reduce using rule 4 (main)
 
 
-State 223
+State 224
 
    40 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR • DEL_COLON body KW_ENDDEF DEL_SMCOLON
    41               | KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR • AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON
 
-    AP_ARROWASSIGN  shift, and go to state 234
-    DEL_COLON       shift, and go to state 235
+    AP_ARROWASSIGN  shift, and go to state 235
+    DEL_COLON       shift, and go to state 236
 
 
-State 224
+State 225
 
    38 comp_identifiers: AP_HASHASSIGN TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK •
 
     $default  reduce using rule 38 (comp_identifiers)
 
 
-State 225
+State 226
 
    26 parameter_declarations: ε •  [DEL_RPAR]
    27                       | • TK_IDENTIFIER DEL_COLON types
@@ -5732,10 +5750,10 @@ State 225
 
     $default  reduce using rule 26 (parameter_declarations)
 
-    parameter_declarations  go to state 236
+    parameter_declarations  go to state 237
 
 
-State 226
+State 227
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -5805,61 +5823,62 @@ State 226
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   117 body: body • statements
   118     | body • variable_declarations
   119     | body • constant_declarations
   120     | body • comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_ENDDEF      shift, and go to state 237
-    KW_RETURN      shift, and go to state 135
+    KW_ENDDEF      shift, and go to state 238
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 195
-    comp_variables          go to state 196
-    constant_declarations   go to state 197
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 196
+    comp_variables          go to state 197
+    constant_declarations   go to state 198
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 198
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 199
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 227
+State 228
 
    24 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON •
 
     $default  reduce using rule 24 (functions)
 
 
-State 228
+State 229
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -5879,7 +5898,7 @@ State 228
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions • KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions • KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
 
-    KW_FOR         shift, and go to state 238
+    KW_FOR         shift, and go to state 239
     KW_AND         shift, and go to state 73
     KW_OR          shift, and go to state 74
     OP_PLUS        shift, and go to state 75
@@ -5897,7 +5916,7 @@ State 228
     DEL_DOT        shift, and go to state 88
 
 
-State 229
+State 230
 
    21 variable_declarations: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK • DEL_COLON basic_types DEL_SMCOLON
    57 identifier_expressions: TK_IDENTIFIER DEL_LBLOCK TK_INTEGER DEL_RBLOCK •  [KW_AND, KW_OR, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, OP_MOD, OP_POWER, RP_EQUALS, RP_NOTEQUALS, RP_LESS, RP_LESSEQUALS, RP_MORE, RP_MOREEQUALS, AP_ASSIGN, AP_PLUSASSIGN, AP_MINASSIGN, AP_MULASSIGN, AP_DIVASSIGN, AP_MODASSIGN, DEL_DOT]
@@ -5907,15 +5926,15 @@ State 229
     $default  reduce using rule 57 (identifier_expressions)
 
 
-State 230
+State 231
 
    98 if_statement: KW_IF DEL_LPAR expressions DEL_RPAR • DEL_COLON command_statements KW_ENDIF
    99             | KW_IF DEL_LPAR expressions DEL_RPAR • DEL_COLON command_statements KW_ELSE DEL_COLON command_statements KW_ENDIF
 
-    DEL_COLON  shift, and go to state 239
+    DEL_COLON  shift, and go to state 240
 
 
-State 231
+State 232
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -5953,7 +5972,8 @@ State 231
    75                       | • expressions RP_NOTEQUALS expressions
   100 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK • expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
   101              | KW_FOR identifiers KW_IN DEL_LBLOCK • expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -5967,7 +5987,7 @@ State 231
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 240
+    expressions             go to state 241
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -5975,21 +5995,21 @@ State 231
     function_statement      go to state 54
 
 
-State 232
+State 233
 
   106 while_statement: KW_WHILE DEL_LPAR expressions DEL_RPAR • DEL_COLON command_statements KW_ENDWHILE
 
-    DEL_COLON  shift, and go to state 241
+    DEL_COLON  shift, and go to state 242
 
 
-State 233
+State 234
 
    22 comp_variables: identifiers DEL_COLON TK_IDENTIFIER DEL_SMCOLON •
 
     $default  reduce using rule 22 (comp_variables)
 
 
-State 234
+State 235
 
     5 types: • DEL_LBLOCK DEL_RBLOCK basic_types
     6      | • basic_types
@@ -6000,18 +6020,18 @@ State 234
    11            | • KW_STR
    41 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN • types DEL_COLON body KW_ENDDEF DEL_SMCOLON
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 242
-    basic_types  go to state 123
+    types        go to state 243
+    basic_types  go to state 124
 
 
-State 235
+State 236
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6081,7 +6101,8 @@ State 235
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   113 body: • statements
   114     | • variable_declarations
   115     | • constant_declarations
@@ -6091,70 +6112,70 @@ State 235
   119     | • body constant_declarations
   120     | • body comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 137
-    comp_variables          go to state 138
-    constant_declarations   go to state 139
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 138
+    comp_variables          go to state 139
+    constant_declarations   go to state 140
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 144
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-    body                    go to state 243
+    assign_expressions      go to state 144
+    statements              go to state 145
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
+    body                    go to state 244
 
 
-State 236
+State 237
 
    29 parameter_declarations: TK_IDENTIFIER DEL_LBLOCK DEL_RBLOCK DEL_COLON types DEL_COMMA parameter_declarations •
 
     $default  reduce using rule 29 (parameter_declarations)
 
 
-State 237
+State 238
 
    25 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 244
+    DEL_SMCOLON  shift, and go to state 245
 
 
-State 238
+State 239
 
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR • TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR • TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
 
-    TK_IDENTIFIER  shift, and go to state 245
+    TK_IDENTIFIER  shift, and go to state 246
 
 
-State 239
+State 240
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6230,49 +6251,50 @@ State 239
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 246
-    constant_declarations   go to state 247
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 247
+    constant_declarations   go to state 248
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 248
-    command_statements      go to state 249
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 249
+    command_statements      go to state 250
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 240
+State 241
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -6306,11 +6328,11 @@ State 240
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
-    DEL_COLON      shift, and go to state 250
+    DEL_COLON      shift, and go to state 251
     DEL_DOT        shift, and go to state 88
 
 
-State 241
+State 242
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6385,56 +6407,57 @@ State 241
   106                | KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON • command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 246
-    constant_declarations   go to state 247
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 247
+    constant_declarations   go to state 248
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 248
-    command_statements      go to state 251
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-
-
-State 242
-
-   41 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types • DEL_COLON body KW_ENDDEF DEL_SMCOLON
-
-    DEL_COLON  shift, and go to state 252
+    assign_expressions      go to state 144
+    statements              go to state 249
+    command_statements      go to state 252
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
 State 243
+
+   41 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types • DEL_COLON body KW_ENDDEF DEL_SMCOLON
+
+    DEL_COLON  shift, and go to state 253
+
+
+State 244
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6504,90 +6527,91 @@ State 243
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   117 body: body • statements
   118     | body • variable_declarations
   119     | body • constant_declarations
   120     | body • comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_ENDDEF      shift, and go to state 253
-    KW_RETURN      shift, and go to state 135
+    KW_ENDDEF      shift, and go to state 254
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 195
-    comp_variables          go to state 196
-    constant_declarations   go to state 197
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 196
+    comp_variables          go to state 197
+    constant_declarations   go to state 198
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 198
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 199
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 244
+State 245
 
    25 functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON •
 
     $default  reduce using rule 25 (functions)
 
 
-State 245
+State 246
 
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER • DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER • DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
 
-    DEL_COLON  shift, and go to state 254
+    DEL_COLON  shift, and go to state 255
 
 
-State 246
+State 247
 
    95 command_statements: variable_declarations •
 
     $default  reduce using rule 95 (command_statements)
 
 
-State 247
+State 248
 
    97 command_statements: constant_declarations •
 
     $default  reduce using rule 97 (command_statements)
 
 
-State 248
+State 249
 
    92 command_statements: statements •
 
     $default  reduce using rule 92 (command_statements)
 
 
-State 249
+State 250
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6660,50 +6684,51 @@ State 249
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_ELSE        shift, and go to state 255
-    KW_ENDIF       shift, and go to state 256
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_ELSE        shift, and go to state 256
+    KW_ENDIF       shift, and go to state 257
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 257
-    constant_declarations   go to state 258
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 258
+    constant_declarations   go to state 259
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 259
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 260
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 250
+State 251
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -6741,7 +6766,8 @@ State 250
    75                       | • expressions RP_NOTEQUALS expressions
   100 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON • expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
   101              | KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON • expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -6755,7 +6781,7 @@ State 250
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 260
+    expressions             go to state 261
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -6763,7 +6789,7 @@ State 250
     function_statement      go to state 54
 
 
-State 251
+State 252
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6835,49 +6861,50 @@ State 251
   106                | KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements • KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_ENDWHILE    shift, and go to state 261
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_ENDWHILE    shift, and go to state 262
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 257
-    constant_declarations   go to state 258
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 258
+    constant_declarations   go to state 259
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 259
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 260
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 252
+State 253
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -6947,7 +6974,8 @@ State 252
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   113 body: • statements
   114     | • variable_declarations
   115     | • constant_declarations
@@ -6957,55 +6985,55 @@ State 252
   119     | • body constant_declarations
   120     | • body comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 137
-    comp_variables          go to state 138
-    constant_declarations   go to state 139
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 138
+    comp_variables          go to state 139
+    constant_declarations   go to state 140
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 144
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-    body                    go to state 262
-
-
-State 253
-
-   40 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF • DEL_SMCOLON
-
-    DEL_SMCOLON  shift, and go to state 263
+    assign_expressions      go to state 144
+    statements              go to state 145
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
+    body                    go to state 263
 
 
 State 254
+
+   40 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF • DEL_SMCOLON
+
+    DEL_SMCOLON  shift, and go to state 264
+
+
+State 255
 
     5 types: • DEL_LBLOCK DEL_RBLOCK basic_types
     6      | • basic_types
@@ -7017,54 +7045,54 @@ State 254
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON • TK_INTEGER DEL_RBLOCK DEL_COLON types
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON • types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
 
-    TK_IDENTIFIER  shift, and go to state 120
-    TK_INTEGER     shift, and go to state 264
+    TK_IDENTIFIER  shift, and go to state 121
+    TK_INTEGER     shift, and go to state 265
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 265
-    basic_types  go to state 123
-
-
-State 255
-
-   99 if_statement: KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE • DEL_COLON command_statements KW_ENDIF
-
-    DEL_COLON  shift, and go to state 266
+    types        go to state 266
+    basic_types  go to state 124
 
 
 State 256
+
+   99 if_statement: KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE • DEL_COLON command_statements KW_ENDIF
+
+    DEL_COLON  shift, and go to state 267
+
+
+State 257
 
    98 if_statement: KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDIF •
 
     $default  reduce using rule 98 (if_statement)
 
 
-State 257
+State 258
 
    94 command_statements: command_statements variable_declarations •
 
     $default  reduce using rule 94 (command_statements)
 
 
-State 258
+State 259
 
    96 command_statements: command_statements constant_declarations •
 
     $default  reduce using rule 96 (command_statements)
 
 
-State 259
+State 260
 
    93 command_statements: command_statements statements •
 
     $default  reduce using rule 93 (command_statements)
 
 
-State 260
+State 261
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -7098,19 +7126,19 @@ State 260
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
-    DEL_RBLOCK     shift, and go to state 267
-    DEL_COLON      shift, and go to state 268
+    DEL_RBLOCK     shift, and go to state 268
+    DEL_COLON      shift, and go to state 269
     DEL_DOT        shift, and go to state 88
 
 
-State 261
+State 262
 
   106 while_statement: KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE •
 
     $default  reduce using rule 106 (while_statement)
 
 
-State 262
+State 263
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -7180,75 +7208,76 @@ State 262
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
   117 body: body • statements
   118     | body • variable_declarations
   119     | body • constant_declarations
   120     | body • comp_variables
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_ENDDEF      shift, and go to state 269
-    KW_RETURN      shift, and go to state 135
+    KW_ENDDEF      shift, and go to state 270
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    identifiers             go to state 136
-    variable_declarations   go to state 195
-    comp_variables          go to state 196
-    constant_declarations   go to state 197
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    identifiers             go to state 137
+    variable_declarations   go to state 196
+    comp_variables          go to state 197
+    constant_declarations   go to state 198
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 198
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 199
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 263
+State 264
 
    40 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR DEL_COLON body KW_ENDDEF DEL_SMCOLON •
 
     $default  reduce using rule 40 (comp_functions)
 
 
-State 264
+State 265
 
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER • DEL_RBLOCK DEL_COLON types
 
-    DEL_RBLOCK  shift, and go to state 270
-
-
-State 265
-
-  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types • KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
-
-    KW_IN  shift, and go to state 271
+    DEL_RBLOCK  shift, and go to state 271
 
 
 State 266
+
+  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types • KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
+
+    KW_IN  shift, and go to state 272
+
+
+State 267
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -7323,56 +7352,57 @@ State 266
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 246
-    constant_declarations   go to state 247
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 247
+    constant_declarations   go to state 248
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 248
-    command_statements      go to state 272
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-
-
-State 267
-
-  100 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK • DEL_COLON command_statements KW_ENDFOR
-
-    DEL_COLON  shift, and go to state 273
+    assign_expressions      go to state 144
+    statements              go to state 249
+    command_statements      go to state 273
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
 State 268
+
+  100 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK • DEL_COLON command_statements KW_ENDFOR
+
+    DEL_COLON  shift, and go to state 274
+
+
+State 269
 
    42 expressions: • identifier_expressions
    43            | • TK_STRING
@@ -7409,7 +7439,8 @@ State 268
    74                       | • expressions RP_EQUALS expressions
    75                       | • expressions RP_NOTEQUALS expressions
   101 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON • expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
     TK_IDENTIFIER  shift, and go to state 38
     TK_INTEGER     shift, and go to state 39
@@ -7423,7 +7454,7 @@ State 268
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
-    expressions             go to state 274
+    expressions             go to state 275
     comp_expressions        go to state 50
     identifier_expressions  go to state 51
     arithmetic_expressions  go to state 52
@@ -7431,28 +7462,28 @@ State 268
     function_statement      go to state 54
 
 
-State 269
+State 270
 
    41 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF • DEL_SMCOLON
 
-    DEL_SMCOLON  shift, and go to state 275
-
-
-State 270
-
-  104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK • DEL_COLON types
-
-    DEL_COLON  shift, and go to state 276
+    DEL_SMCOLON  shift, and go to state 276
 
 
 State 271
 
-  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN • TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
+  104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK • DEL_COLON types
 
-    TK_IDENTIFIER  shift, and go to state 277
+    DEL_COLON  shift, and go to state 277
 
 
 State 272
+
+  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN • TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
+
+    TK_IDENTIFIER  shift, and go to state 278
+
+
+State 273
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -7524,49 +7555,50 @@ State 272
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_ENDIF       shift, and go to state 278
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_ENDIF       shift, and go to state 279
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 257
-    constant_declarations   go to state 258
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 258
+    constant_declarations   go to state 259
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 259
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 260
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 273
+State 274
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -7641,49 +7673,50 @@ State 273
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 246
-    constant_declarations   go to state 247
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 247
+    constant_declarations   go to state 248
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 248
-    command_statements      go to state 279
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
+    assign_expressions      go to state 144
+    statements              go to state 249
+    command_statements      go to state 280
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
-State 274
+State 275
 
    50 expressions: expressions • KW_AND expressions
    51            | expressions • KW_OR expressions
@@ -7716,18 +7749,18 @@ State 274
     RP_LESSEQUALS  shift, and go to state 84
     RP_MORE        shift, and go to state 85
     RP_MOREEQUALS  shift, and go to state 86
-    DEL_RBLOCK     shift, and go to state 280
+    DEL_RBLOCK     shift, and go to state 281
     DEL_DOT        shift, and go to state 88
 
 
-State 275
+State 276
 
    41 comp_functions: KW_DEF TK_IDENTIFIER DEL_LPAR parameter_declarations DEL_RPAR AP_ARROWASSIGN types DEL_COLON body KW_ENDDEF DEL_SMCOLON •
 
     $default  reduce using rule 41 (comp_functions)
 
 
-State 276
+State 277
 
     5 types: • DEL_LBLOCK DEL_RBLOCK basic_types
     6      | • basic_types
@@ -7738,32 +7771,32 @@ State 276
    11            | • KW_STR
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON • types
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 281
-    basic_types  go to state 123
-
-
-State 277
-
-  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER • KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
-
-    KW_OF  shift, and go to state 282
+    types        go to state 282
+    basic_types  go to state 124
 
 
 State 278
+
+  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER • KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types
+
+    KW_OF  shift, and go to state 283
+
+
+State 279
 
    99 if_statement: KW_IF DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ELSE DEL_COLON command_statements KW_ENDIF •
 
     $default  reduce using rule 99 (if_statement)
 
 
-State 279
+State 280
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -7835,77 +7868,78 @@ State 279
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_ENDFOR      shift, and go to state 283
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_ENDFOR      shift, and go to state 284
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 257
-    constant_declarations   go to state 258
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 258
+    constant_declarations   go to state 259
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 259
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-
-
-State 280
-
-  101 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK • DEL_COLON command_statements KW_ENDFOR
-
-    DEL_COLON  shift, and go to state 284
+    assign_expressions      go to state 144
+    statements              go to state 260
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
 State 281
+
+  101 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK • DEL_COLON command_statements KW_ENDFOR
+
+    DEL_COLON  shift, and go to state 285
+
+
+State 282
 
   104 integral_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON TK_INTEGER DEL_RBLOCK DEL_COLON types •
 
     $default  reduce using rule 104 (integral_array)
 
 
-State 282
+State 283
 
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF • TK_INTEGER DEL_RBLOCK DEL_COLON types
 
-    TK_INTEGER  shift, and go to state 285
+    TK_INTEGER  shift, and go to state 286
 
 
-State 283
+State 284
 
   100 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR •
 
     $default  reduce using rule 100 (for_statement)
 
 
-State 284
+State 285
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -7980,56 +8014,57 @@ State 284
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 246
-    constant_declarations   go to state 247
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 247
+    constant_declarations   go to state 248
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 248
-    command_statements      go to state 286
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-
-
-State 285
-
-  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER • DEL_RBLOCK DEL_COLON types
-
-    DEL_RBLOCK  shift, and go to state 287
+    assign_expressions      go to state 144
+    statements              go to state 249
+    command_statements      go to state 287
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
 State 286
+
+  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER • DEL_RBLOCK DEL_COLON types
+
+    DEL_RBLOCK  shift, and go to state 288
+
+
+State 287
 
    12 identifiers: • TK_IDENTIFIER
    13            | • identifiers DEL_COMMA TK_IDENTIFIER
@@ -8101,63 +8136,64 @@ State 286
   106 while_statement: • KW_WHILE DEL_LPAR expressions DEL_RPAR DEL_COLON command_statements KW_ENDWHILE
   107 return_statement: • KW_RETURN
   108                 | • KW_RETURN expressions
-  109 function_statement: • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
+  109 function_statement: • TK_IDENTIFIER DEL_LPAR DEL_RPAR
+  110                   | • TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR
 
-    TK_IDENTIFIER  shift, and go to state 129
+    TK_IDENTIFIER  shift, and go to state 130
     TK_INTEGER     shift, and go to state 39
     TK_FLOAT       shift, and go to state 40
     TK_STRING      shift, and go to state 41
     KW_TRUE        shift, and go to state 42
     KW_FALSE       shift, and go to state 43
     KW_CONST       shift, and go to state 2
-    KW_IF          shift, and go to state 130
-    KW_FOR         shift, and go to state 131
-    KW_ENDFOR      shift, and go to state 288
-    KW_WHILE       shift, and go to state 132
-    KW_BREAK       shift, and go to state 133
-    KW_CONTINUE    shift, and go to state 134
+    KW_IF          shift, and go to state 131
+    KW_FOR         shift, and go to state 132
+    KW_ENDFOR      shift, and go to state 289
+    KW_WHILE       shift, and go to state 133
+    KW_BREAK       shift, and go to state 134
+    KW_CONTINUE    shift, and go to state 135
     KW_NOT         shift, and go to state 44
-    KW_RETURN      shift, and go to state 135
+    KW_RETURN      shift, and go to state 136
     OP_PLUS        shift, and go to state 45
     OP_MINUS       shift, and go to state 46
     AP_HASHASSIGN  shift, and go to state 47
     DEL_LPAR       shift, and go to state 48
 
     identifiers             go to state 8
-    variable_declarations   go to state 257
-    constant_declarations   go to state 258
-    expressions             go to state 140
-    comp_expressions        go to state 141
-    identifier_expressions  go to state 142
+    variable_declarations   go to state 258
+    constant_declarations   go to state 259
+    expressions             go to state 141
+    comp_expressions        go to state 142
+    identifier_expressions  go to state 143
     arithmetic_expressions  go to state 52
     relational_expressions  go to state 53
-    assign_expressions      go to state 143
-    statements              go to state 259
-    if_statement            go to state 145
-    for_statement           go to state 146
-    array_statement         go to state 147
-    integral_array          go to state 148
-    other_array             go to state 149
-    while_statement         go to state 150
-    return_statement        go to state 151
-    function_statement      go to state 152
-
-
-State 287
-
-  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK • DEL_COLON types
-
-    DEL_COLON  shift, and go to state 289
+    assign_expressions      go to state 144
+    statements              go to state 260
+    if_statement            go to state 146
+    for_statement           go to state 147
+    array_statement         go to state 148
+    integral_array          go to state 149
+    other_array             go to state 150
+    while_statement         go to state 151
+    return_statement        go to state 152
+    function_statement      go to state 153
 
 
 State 288
+
+  105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK • DEL_COLON types
+
+    DEL_COLON  shift, and go to state 290
+
+
+State 289
 
   101 for_statement: KW_FOR identifiers KW_IN DEL_LBLOCK expressions DEL_COLON expressions DEL_COLON expressions DEL_RBLOCK DEL_COLON command_statements KW_ENDFOR •
 
     $default  reduce using rule 101 (for_statement)
 
 
-State 289
+State 290
 
     5 types: • DEL_LBLOCK DEL_RBLOCK basic_types
     6      | • basic_types
@@ -8168,18 +8204,18 @@ State 289
    11            | • KW_STR
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON • types
 
-    TK_IDENTIFIER  shift, and go to state 120
+    TK_IDENTIFIER  shift, and go to state 121
     KW_INT         shift, and go to state 32
     KW_SCALAR      shift, and go to state 33
     KW_STR         shift, and go to state 34
     KW_BOOLEAN     shift, and go to state 35
-    DEL_LBLOCK     shift, and go to state 121
+    DEL_LBLOCK     shift, and go to state 122
 
-    types        go to state 290
-    basic_types  go to state 123
+    types        go to state 291
+    basic_types  go to state 124
 
 
-State 290
+State 291
 
   105 other_array: TK_IDENTIFIER AP_COLONASSIGN DEL_LBLOCK expressions KW_FOR TK_IDENTIFIER DEL_COLON types KW_IN TK_IDENTIFIER KW_OF TK_INTEGER DEL_RBLOCK DEL_COLON types •
 

@@ -20,7 +20,9 @@ int num_functions = 0;
 int num_comps = 0;
 int total_functions = 0;
 
-int cflag = 0;
+int cflag = 0; // flag to choose -> or not 
+int dflag = 0; // flag used for expr.func(&expr)
+
 
 char* buffer;
 char* namebuffer;
@@ -176,7 +178,7 @@ program:
           {     
                 FILE *fp = fopen("bisonout.c","w");
 
-                printf("\n\t\t\tC CODE SHOWCASE\n");
+                printf("\n\t\t\tC CODE\n");
                 printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n");
                 printf("\n%s\n", $1);
                 printf("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n");
@@ -292,7 +294,9 @@ complex_type_declarations:
     cflag = 0;
     // get all the function output strings in one buffer to print them
     buffer = malloc(1);
+    buffer[0] = '\0';
     namebuffer = malloc(1);
+    namebuffer[0] = '\0';
 
     //printf("1\n");
     //printf("nf%d\n", num_functions);
@@ -320,7 +324,7 @@ complex_type_declarations:
 
     }
 
-    printf("\n%s\n", $2);
+    //printf("\n%s\n", $2);
     // store the comp name
     // raise counter
     num_comps = num_comps + 1;
@@ -333,17 +337,16 @@ complex_type_declarations:
 
     comp_names[num_comps - 1] = strdup(template("%s", $2)); 
 
-    printf("\n%s\n", comp_names[num_comps -1]);
+    //printf("\n%s\n", comp_names[num_comps -1]);
 
-    for(int i = 0; i < num_comps; i++){
-      printf("\n%s\n", comp_names[i]);
-    }
+    //for(int i = 0; i < num_comps; i++){
+      //printf("\n%s\n", comp_names[i]);
+    //}
 
     $$ = template("\n#define SELF struct %s *self\ntypedef struct %s {\n%s\n} %s;\n\n%s\n\nconst ctor_%s = { %s };\n#under SELF", $2, $2, $4, $2, buffer, $2, namebuffer); 
 
    
     num_functions = 0;
-
     };
 
 
@@ -375,7 +378,6 @@ comp_functions:
     // raise counter
     num_functions = num_functions + 1;
     total_functions = total_functions + 1;
-
 
     // allocate space
     comp_function_output = realloc(comp_function_output, num_functions * sizeof(char*));
@@ -444,7 +446,7 @@ comp_functions:
 
 // ============================================================Expressions=====================================================
 expressions:
-  identifier_expressions { $$ = $1; }
+  identifier_expressions { $$ = $1; dot_call = strdup(template("%s", $1)); }
   | TK_STRING {$$ = $1;}
   | KW_TRUE {$$ = template("%s", "1");}
   | KW_FALSE {$$ = template("%s", "0");}
@@ -573,14 +575,30 @@ return_statement:
 
 //function_statements
 function_statement:
-  TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR {
+  TK_IDENTIFIER DEL_LPAR DEL_RPAR {
   int found = 0;
   for (int i=0; i < total_functions; i++) {
     //printf("%s || %s", $1, cfnames[i]);
     if (strcmp(cfnames[i], $1) == 0){
       //printf("2\n");
       //printf("%s\n", dot_call);
-      $$ = template("%s(&%s%s)", $1, dot_call, $3);
+      $$ = template("%s(&%s)", $1, dot_call);
+      found = 1;
+      break;       
+    }
+  } 
+  if (found == 0) {
+    $$ = template("%s()", $1);
+    }
+  }
+  | TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR {
+    int found = 0;
+  for (int i=0; i < total_functions; i++) {
+    //printf("%s || %s", $1, cfnames[i]);
+    if (strcmp(cfnames[i], $1) == 0){
+      //printf("2\n");
+      //printf("%s\n", dot_call);
+      $$ = template("%s(&%s, %s)", $1, dot_call, $3);
       found = 1;
       break;       
     }
@@ -592,9 +610,8 @@ function_statement:
   
 
 function_arg:
-  %empty { $$ = ""; }
-  | expressions { $$ = template(",%s", $1);}
-  | function_arg DEL_COMMA expressions { $$ = template(", %s, %s", $1, $3); }
+  expressions { $$ = template("%s", $1);}
+  | expressions DEL_COMMA function_arg { $$ = template("%s, %s", $1, $3); }
 
 
 body: 
