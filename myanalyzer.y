@@ -10,20 +10,22 @@
 int yylex(void);
 extern int line_num;
 
-
+// arrays used for comp types 
 char** comp_function_output = NULL;
 char** comp_function_names = NULL;
 char** cfnames = NULL;
 char** comp_names = NULL;
 
+// counters for comp type arrays
 int num_functions = 0;
 int num_comps = 0;
 int total_functions = 0;
 
+// flags
 int cflag = 0; // flag to choose -> or not 
 int dflag = 0; // flag used for expr.func(&expr)
 
-
+// buffers and dot_call for &expr
 char* buffer;
 char* namebuffer;
 char* dot_call;
@@ -210,6 +212,7 @@ types:
   DEL_LBLOCK DEL_RBLOCK basic_types { $$ = template("%s*", $3); }
   | basic_types { $$ = $1; }
   | TK_IDENTIFIER {
+    // Check if there is a comp type declared with with TK_IDENTIFIER name if not give error
     int found = 0;
       //printf("\n%d\n", num_comps);
       for (int i = 0; i < num_comps; i++) {
@@ -292,7 +295,7 @@ parameter_declarations:
 complex_type_declarations:
   KW_COMP TK_IDENTIFIER DEL_COLON comp_body KW_ENDCOMP DEL_SMCOLON { // reset comp flag
     cflag = 0;
-    // get all the function output strings in one buffer to print them
+    // get all the function output strings in one buffer to print them (one buffer for the functions and one for the function names)
     buffer = malloc(1);
     buffer[0] = '\0';
     namebuffer = malloc(1);
@@ -326,7 +329,7 @@ complex_type_declarations:
 
     //printf("\n%s\n", $2);
     // store the comp name
-    // raise counter
+    // raise counters
     num_comps = num_comps + 1;
 
     // allocate space
@@ -463,6 +466,7 @@ expressions:
 comp_expressions:
   expressions DEL_DOT expressions { 
     //printf("1\n");
+    // dot_call variable used to store last expression for &expr 
     dot_call = strdup(template("%s", $1));
     $$ = template("%s.%s", $1, $3); };
 
@@ -576,6 +580,7 @@ return_statement:
 //function_statements
 function_statement:
   TK_IDENTIFIER DEL_LPAR DEL_RPAR {
+  // check if there is a comp function declared with that name else give error
   int found = 0;
   for (int i=0; i < total_functions; i++) {
     //printf("%s || %s", $1, cfnames[i]);
@@ -592,7 +597,8 @@ function_statement:
     }
   }
   | TK_IDENTIFIER DEL_LPAR function_arg DEL_RPAR {
-    int found = 0;
+  // check if there is a comp function declared with that name else give error
+  int found = 0;
   for (int i=0; i < total_functions; i++) {
     //printf("%s || %s", $1, cfnames[i]);
     if (strcmp(cfnames[i], $1) == 0){
