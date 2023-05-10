@@ -185,7 +185,6 @@ program:
                 printf("\n%s\n", $1);
                 printf("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \n");
                 printf("\t\t\tC CODE END\n");
-                printf("\nWrite everything on an output just for my ease.\n");
                 fputs("#include <stdio.h>\n",fp);
                 fputs("#include <math.h>\n",fp);
                 fputs(c_prologue,fp);
